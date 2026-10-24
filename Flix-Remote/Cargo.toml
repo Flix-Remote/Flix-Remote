@@ -5,7 +5,7 @@ edition = "2024"
 rust-version = "1.89"
 license = "MIT"
 description = "The original single-page FLIX remote with direct phone-to-TV networking"
-repository = "https://github.com/Ahmedzx054/flix-home-remote"
+repository = "https://github.com/Flix-Remote/Flix-Remote"
 [lib]
 name = "dayapp"
 [features]

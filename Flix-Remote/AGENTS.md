@@ -1,7 +1,8 @@
 # Working on this Day app
 
-This app uses native widgets through Day. Its starter has one main window, Welcome and Items
-sections, and Settings in the desktop app menu or mobile navigation.
+This Day candidate hosts the original single-page FLIX remote through one custom Piece.
+Preserve the canonical page and its native LAN/ADB plugins and bridge-1 update checks.
+Never launch the owner's phone or connect to household televisions during unattended checks.
 
 ## Day documentation
 
@@ -20,10 +21,12 @@ Use examples with the API supported by this project's Day dependency version. Ch
 
 ## Project map
 
-- `src/lib.rs`: app setup, typed routes, navigation, and menus.
-- `src/model.rs`: the item model, shared `Scene` state, JSON persistence, and unit tests.
-- `src/pages/mod.rs`: declarations for welcome, items, and detail pages. Settings and About
-  are declared in `src/lib.rs` through `day-piece-settings` (https://daybrite.dev/docs/settings/).
+- `src/lib.rs`: the single remote page and Day app setup.
+- `src/remote.rs`: UIKit, Android and DOM custom Piece renderers.
+- `../src/remote-page/`: shared canonical UI import and compatible cloud updates.
+- `../scripts/stage-day.mjs`: deterministic UI/native source staging.
+- `platform/ios/bridge/DayRemoteView.swift`: existing Capacitor controller containment.
+- `platform/android/java/`: Capacitor fragment and lifecycle forwarding.
 - `resource/locales/<locale>/app.ftl`: app-owned UI strings.
 - `resource/`: bundled vectors, images, fonts, and data assets.
 - `dayscript/demo.yaml`: portable smoke test and screenshots.

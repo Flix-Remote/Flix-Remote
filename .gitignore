@@ -2,6 +2,7 @@ node_modules/
 /src/build-info.ts
 .research/
 public/ssh/sshcore.wasm
+public/ssh/wasm_exec.js
 .toolchain/
 releases/
 dist/

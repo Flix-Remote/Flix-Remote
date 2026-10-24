@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 import UIKit
 import Capacitor
-import CapacitorApp
-import CapacitorFilesystem
-import CapacitorPreferences
-import CapacitorShare
+import AppPlugin
+import FilesystemPlugin
+import PreferencesPlugin
+import SharePlugin
 
 private final class DayRemoteController: HomeRemoteViewController {
     let assets: URL

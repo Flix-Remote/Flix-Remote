@@ -12,8 +12,9 @@ This is an introduction and architecture/privacy review request, not catalog acc
 Day Piece hosts the original remote page. `npm run build` stages the same `dist/`
 into Capacitor and the Day resource bundle. The native LAN, ADB pairing/installation,
 secure storage and speech sources remain the original three plugins. UIKit embeds
-the existing bridge controller; Android adapts Capacitor to Day's FragmentActivity
-inside generated dependency copies, with exact before/after hashes.
+the existing bridge controller. Android uses an AppCompatActivity subclass for Day's
+host (preserving FragmentActivity semantics), with a recorded single-file adaptation
+in a generated copy. Capacitor and Cordova sources remain unmodified.
 
 The original `src/remote-page/updates.ts` channel is retained. Compatible remote-page
 changes are fetched through the existing trusted HTTPS bridge-1 manifest, verified
@@ -36,15 +37,19 @@ They are not replaced by fixtures or counted as passing in the standalone suite.
 
 ## App Fair gates
 
-The public source-review branch is `codex/day-appfair` in `Ahmedzx054/flix-home-remote`.
-It is not the required final organization/repository pair. A matching public GitHub
-organization and repository and the App Fair Publisher installation remain necessary.
+The matching public organization/repository `Flix-Remote/Flix-Remote` has been created
+and the sanitized client history imported, including `codex/day-appfair`.
+The original source-review PR remains available in `Ahmedzx054/flix-home-remote`.
+App Fair Publisher was installed with the owner's explicit permission on 2026-10-24,
+installation 174784228, limited to this repository (metadata read, code read/write).
 The `appfair` flavor's application ID is a proposal and must be confirmed before release.
 
 App Fair must explicitly review this hybrid Day/custom native Piece and the retained
 cloud JavaScript updates, opt-in support/diagnostics, FLIX accounts and app package library.
 The remote must remain free, without ads or paid feature unlocks. Its source license
 does not license third-party video content or authorize distributing other apps.
+The official App Fair lint passes all five source/identity/license-presence rules.
+This is not a determination of license compatibility or eligibility.
 The full dependency/asset license inventory and reproducible Maven source builds remain
 release gates. A privacy draft is supplied, not a completed retention/security audit.
 

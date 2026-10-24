@@ -1,5 +1,5 @@
 import {execFileSync} from 'node:child_process';
-import {mkdirSync,copyFileSync,readFileSync,writeFileSync,existsSync,chmodSync} from 'node:fs';
+import {mkdirSync,copyFileSync,readFileSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 const go=process.env.FLIX_GO || (process.platform==='win32'?resolve('.toolchain/go/bin/go.exe'):'go');
 mkdirSync('public/ssh',{recursive:true});
@@ -12,8 +12,15 @@ mkdirSync('public/licenses',{recursive:true});
 // Require the installed toolchain's license; never silently omit attribution.
 const goLicense=[resolve(root,'LICENSE'),resolve(root,'../LICENSE'),resolve(root,'../share/doc/go/LICENSE')].find(existsSync);
 if(!goLicense)throw new Error(`Go toolchain license not found beside ${root}`);
-copyFileSync(goLicense,'public/licenses/Go.txt');
+// Keep tracked attribution byte-stable across Windows/macOS checkouts and Go installs.
+// A different license requires review, not a silent source change during a build.
+const normalizedLicense=path=>readFileSync(path,'utf8').replaceAll('\r\n','\n').trim();
+function retainLicense(source,target){
+  if(existsSync(target)){
+    if(normalizedLicense(source)!==normalizedLicense(target))throw new Error(`License changed; review ${target} against ${source}`);
+  }else copyFileSync(source,target);
+}
+retainLicense(goLicense,'public/licenses/Go.txt');
 const modules=execFileSync(go,['env','GOMODCACHE'],{cwd:'sshcore',encoding:'utf8'}).trim();
 const license='public/licenses/x-crypto.txt';
-if(existsSync(license))chmodSync(license,0o666);
-writeFileSync(license,readFileSync(resolve(modules,'golang.org/x/crypto@v0.43.0/LICENSE')));
+retainLicense(resolve(modules,'golang.org/x/crypto@v0.43.0/LICENSE'),license);

@@ -62,7 +62,6 @@ const modules = [
     name: `capacitor-${name}`, from: `@capacitor/${name}/android`, ns: `com.capacitorjs.plugins.${name}`,
   })),
 ];
-const patches = [];
 const coreDeps = [
   'androidx.appcompat:appcompat:1.7.1', 'androidx.core:core:1.17.0',
   'androidx.activity:activity:1.11.0', 'androidx.fragment:fragment:1.8.9',
@@ -75,20 +74,6 @@ for (const m of modules) {
   await replaceDir(join(dest, 'src/main'), join(source, 'src/main'));
   const packageRoot = join(root, 'node_modules', '@capacitor', m.core ? 'android' : m.name.slice('capacitor-'.length));
   await cp(join(packageRoot, 'LICENSE'), join(dest, 'LICENSE'));
-  if (m.core) {
-    // Day owns FragmentActivity. Capacitor only needs its Fragment/ActivityResult APIs.
-    // Keep the original npm dependency untouched; record each exact generated patch.
-    for (const p of await files(join(dest, 'src/main/java'))) {
-      if (!p.endsWith('.java')) continue;
-      const before = await readFile(p, 'utf8');
-      if (!before.includes('AppCompatActivity')) continue;
-      const after = before.replaceAll('androidx.appcompat.app.AppCompatActivity', 'androidx.fragment.app.FragmentActivity')
-        .replaceAll('AppCompatActivity', 'FragmentActivity');
-      await writeFile(p, after);
-      patches.push({ file: relative(bridge, p).replaceAll('\\', '/'), before: hash(before), after: hash(after) });
-    }
-    if (patches.length !== 5) throw new Error(`Capacitor host adapter drift: expected 5 patched files, found ${patches.length}`);
-  }
   const deps = m.core ? coreDeps.map(d => `    implementation("${d}")`) : [
     '    implementation(project(":capacitor-android"))',
     '    implementation("androidx.appcompat:appcompat:1.7.1")',
@@ -107,8 +92,9 @@ const receipt = {
   schema: 1, day: { version: '0.6.0', revision: '2c787ecae32a59cf58260aca95b51a4b1bd98d41' },
   source: 'local_apps/flix-s/tools/tv-remote.html',
   generatedUi: 'dist', channel: 'bridge-1',
-  nativeInputs: inputs, ui: uiFiles, capacitorFragmentAdapter: patches,
+  nativeInputs: inputs, ui: uiFiles, capacitorSourcesUnmodified: true,
+  androidHostAdapter: 'platform/android/app/build.gradle.kts (generated DayActivity subclass adapter)',
   qualifications: { nativeIosBuilt: false, nativeAndroidBuilt: false, physicalDeviceTested: false },
 };
 await put(join(bridge, 'stage-receipt.json'), JSON.stringify(receipt, null, 2) + '\n');
-process.stdout.write(`Day staging: ${Object.keys(uiFiles).length} UI files, 3 native LAN/ADB plugins, 5 Capacitor library modules, ${patches.length} isolated host adaptations\n`);
+process.stdout.write(`Day staging: ${Object.keys(uiFiles).length} UI files, 3 native LAN/ADB plugins, 5 unmodified Capacitor library modules\n`);
