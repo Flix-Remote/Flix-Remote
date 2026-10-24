@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0
       - name: Import reviewed code; workflows are maintained through the web UI
         env:
-          REVIEWED_COMMIT: 0e13a0a6b0b20fd0671d6342d6d7b7983bed85ad
+          REVIEWED_COMMIT: 764e4982ce43dce405d0a2ada212a00f5c99bee7
         run: |
           set -euo pipefail
           git fetch --no-tags https://github.com/Ahmedzx054/flix-home-remote.git "$REVIEWED_COMMIT"
