@@ -28,13 +28,14 @@ jobs:
       targets: ios-uikit android-mdc web-dom
       preflight-checks: fmt check test clippy
       scripts: auto
-      locales: ar
-      themes: dark
-      ios-profiles: iPhone
-      android-profiles: medium_phone
+      locales: ar en
+      themes: light dark
+      ios-profiles: iPhone=phone, iPad Pro=ipad
+      android-profiles: medium_phone=phone, medium_tablet=tablet
       release-assets: false
       deploy-web: false
       update-day-deps: false
+      post-pack-command: python3 ../scripts/day-native-review.py
       target-packages: |
         ios-uikit: go
       target-setup: |
