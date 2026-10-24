@@ -12,9 +12,13 @@ export async function verifyPage(r:PageRelease,html:string){
  const bytes=new TextEncoder().encode(html);if(bytes.length!==r.bytes)throw Error('Remote UI size mismatch');
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');if(hash!==r.sha256)throw Error('Remote UI digest mismatch');return html;
 }
+/** The last downloaded page that still verifies, read from local storage only; never throws. */
+export async function cachedRemotePage():Promise<{release:PageRelease;html:string}|undefined>{
+ try{const stored=JSON.parse((await Preferences.get({key})).value||'null');if(stored){const html=await verifyPage(stored.release,stored.html);Object.assign(remoteUI,{source:'cached',sha256:stored.release.sha256,version:stored.release.version});return{release:stored.release,html};}}catch{/* Keep the bundled working page on corrupt storage. */}
+ return undefined;
+}
 export async function latestRemotePage(fallback:string){
- let source=fallback,previous:PageRelease|undefined;
- try{const stored=JSON.parse((await Preferences.get({key})).value||'null');if(stored){source=await verifyPage(stored.release,stored.html);previous=stored.release;Object.assign(remoteUI,{source:'cached',sha256:previous!.sha256,version:previous!.version});}}catch{/* Keep the bundled working page on corrupt storage. */}
+ const cached=await cachedRemotePage(),previous=cached?.release;let source=cached?.html??fallback;
  try{
   const manifest=await CapacitorHttp.request({url:origin+'/home-remote/ui/release.json',method:'GET',headers:{'Cache-Control':'no-cache'},responseType:'json',connectTimeout:4000,readTimeout:4000});
   const release=manifest.data as PageRelease;if(manifest.status!==200||!validPageRelease(release))throw Error('UI release unavailable or requires an app update');

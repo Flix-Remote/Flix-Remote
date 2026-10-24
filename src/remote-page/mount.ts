@@ -1,13 +1,15 @@
 import { Capacitor, CapacitorHttp, registerPlugin } from '@capacitor/core';
 import bundledSource from './source.html?raw';
-import {latestRemotePage} from './updates.ts';
+import {cachedRemotePage,latestRemotePage} from './updates.ts';
 import { createPageBridge, type PageHost, type Utility } from './bridge.ts';
 
 declare global {interface Window {flixRemotePageRequest:(route:string,init?:{method?:string;body?:string})=>Promise<Response>;flixRemoteSpeech:()=>Promise<{text:string}>}}
 const cloudHosts=new Set(['flix-s-neon.vercel.app','flix-iptv-snowy.vercel.app','flix-admin-tan.vercel.app']);
 /** The bundled original page runs unchanged; only transport and account/install entry points change. */
 export async function mountOriginalRemote(host:PageHost){
- // Render the reviewed bundled page before waiting for cloud update traffic.
+ // Render the last verified page (a cached download, else the reviewed bundled page) before
+ // waiting for cloud update traffic. Drawing the bundled page first made every relaunch reload
+ // into the cached one a moment later, under the user and under the native readiness probe.
  // The caller starts update() after initialization; its existing idle/dialog
  // guards still protect account forms and in-progress remote interactions.
  let source=bundledSource,idleAfter=0,updating=false;
@@ -46,6 +48,8 @@ export async function mountOriginalRemote(host:PageHost){
  const setSource=(html:string)=>{delete frame.dataset.flixPainted;frame.srcdoc=html.replace('<head>','<head>'+shim).replace('</body>',additions+'</body>');};
  const canReload=()=>!document.hidden&&Date.now()>=idleAfter&&!document.body.classList.contains('native-sheet-open')&&!document.querySelector('dialog[open],input:focus,textarea:focus,select:focus')&&!frame.contentDocument?.body.classList.contains('editing')&&!frame.contentDocument?.querySelector('.sheet:not([hidden]),.psheet:not([hidden]),input:focus,textarea:focus,select:focus');
  frame.addEventListener('load',()=>{const loaded=frame.contentDocument;for(const event of ['pointerdown','pointerup','keydown','touchstart','touchend'])loaded?.addEventListener(event,()=>{idleAfter=Date.now()+5000;},{passive:true});requestAnimationFrame(()=>requestAnimationFrame(()=>{if(frame.contentDocument===loaded){frame.dataset.flixPainted='true';firstPaint();}}));});
+ const cached=await Promise.race([cachedRemotePage(),new Promise<undefined>(resolve=>setTimeout(resolve,400))]);
+ if(cached)source=cached.html;
  setSource(source);
  document.body.prepend(frame);document.body.classList.add('remote-original');
  return{painted,update:async()=>{if(updating||!canReload())return;updating=true;try{const next=await latestRemotePage(bundledSource);if(next!==source&&canReload()){source=next;setSource(next);}}finally{updating=false;}},notify:(message:string)=>{const notice=frame.contentDocument?.getElementById('phoneNotice');if(notice){notice.textContent=message;notice.hidden=false;setTimeout(()=>{notice.hidden=true;},7000);}},show:(tvHost?:string)=>{if(tvHost)(frame.contentWindow as any)?.flixRemote?.useHost(tvHost);document.body.classList.add('remote-original');},open:(action:Utility)=>host.open(action)};
