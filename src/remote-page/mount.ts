@@ -7,7 +7,10 @@ declare global {interface Window {flixRemotePageRequest:(route:string,init?:{met
 const cloudHosts=new Set(['flix-s-neon.vercel.app','flix-iptv-snowy.vercel.app','flix-admin-tan.vercel.app']);
 /** The bundled original page runs unchanged; only transport and account/install entry points change. */
 export async function mountOriginalRemote(host:PageHost){
- let source=await latestRemotePage(bundledSource),idleAfter=0,updating=false;
+ // Render the reviewed bundled page before waiting for cloud update traffic.
+ // The caller starts update() after initialization; its existing idle/dialog
+ // guards still protect account forms and in-progress remote interactions.
+ let source=bundledSource,idleAfter=0,updating=false;
  const frame=document.createElement('iframe');frame.id='original-remote';frame.title='صفحة ريموت FLIX الأصلية';
  frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-modals');
  const request=createPageBridge(host),browserFetch=window.fetch.bind(window);

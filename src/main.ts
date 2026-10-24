@@ -331,6 +331,7 @@ if (Capacitor.isNativePlatform()) {
   closeDialog(); if(!originalRemote)void run(scan);
   void App.addListener('appStateChange', ({ isActive }) => { if (isActive) void reconnect().then(() => run(scan)); else { support.revokeControl(); void support.stopSharing(); } });
 }
+if(originalRemote)void originalRemote.update();
 window.addEventListener('online', () => { void reconnect(); });
 
 document.addEventListener('visibilitychange', () => { if (document.hidden) { support.revokeControl(); void support.stopSharing(); } });

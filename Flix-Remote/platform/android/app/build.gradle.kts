@@ -1,5 +1,7 @@
 import java.security.MessageDigest
 import groovy.json.JsonOutput
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 
 plugins {
     // Configures this module from Day.toml and the app's pieces
@@ -47,15 +49,29 @@ dependencies {
 tasks.register("flixDependencyReview") {
     doLast {
         val configuration = configurations.getByName("releaseRuntimeClasspath")
-        val artifacts = configuration.resolvedConfiguration.resolvedArtifacts.map { artifact ->
-            mapOf("coordinate" to artifact.moduleVersion.id.toString(), "name" to artifact.file.name,
+        // Hash original external Maven artifacts. Local Android projects expose
+        // several AGP secondary artifacts, so the legacy untyped artifact query
+        // is ambiguous. They remain in the complete graph below and their
+        // reviewed source is captured by the locked npm/source inventories.
+        val artifacts = configuration.incoming.artifactView {
+            componentFilter { it is ModuleComponentIdentifier }
+        }.artifacts.artifacts.map { artifact ->
+            val module = artifact.id.componentIdentifier as ModuleComponentIdentifier
+            mapOf("coordinate" to "${module.group}:${module.module}:${module.version}", "name" to artifact.file.name,
                 "sha256" to MessageDigest.getInstance("SHA-256").digest(artifact.file.readBytes()).joinToString("") { "%02x".format(it) })
         }.sortedBy { it["coordinate"] }
         val graph = configuration.incoming.resolutionResult.allComponents.map { component ->
-            mapOf("id" to component.id.displayName, "dependencies" to component.dependencies.map { it.requested.displayName }.sorted())
+            check(component.id is ModuleComponentIdentifier || component.id is ProjectComponentIdentifier) {
+                "Unreviewed runtime component type: ${component.id}"
+            }
+            mapOf("id" to component.id.displayName,
+                "kind" to if (component.id is ModuleComponentIdentifier) "maven" else "source-project",
+                "dependencies" to component.dependencies.map { it.requested.displayName }.sorted())
         }.sortedBy { it["id"].toString() }
         val out = rootProject.file("../../build/bridge/native-runtime.json")
         out.parentFile.mkdirs()
-        out.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(mapOf("configuration" to configuration.name, "artifacts" to artifacts, "graph" to graph))) + "\n")
+        out.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(mapOf("configuration" to configuration.name,
+            "artifact_scope" to "external Maven files; local projects retained in graph and source inventory",
+            "artifacts" to artifacts, "graph" to graph))) + "\n")
     }
 }

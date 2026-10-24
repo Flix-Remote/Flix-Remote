@@ -1,0 +1,33 @@
+import http from 'node:http';
+import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {chromium,expect} from '@playwright/test';
+import {nativeFixture,installNativeBoundary} from './native-fixture.ts';
+const root=process.cwd(),fixture=nativeFixture(),checks:string[]=[];
+const server=http.createServer((req,res)=>{try{const name=new URL(req.url!,'http://fixture').pathname,file=path.join(root,'dist',name==='/'?'index.html':name);res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(readFileSync(file));}catch{res.writeHead(404).end();}});
+await new Promise<void>(r=>server.listen(0,'127.0.0.1',r));
+const browser=await chromium.launch({channel:'msedge',headless:true});
+let inspected:import('@playwright/test').Page|undefined;
+try{
+ const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ inspected=page;page.setDefaultTimeout(12000);
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ let finishCloud!:()=>void,cloudRequested=false;
+ const heldCloud=new Promise<void>(resolve=>{finishCloud=resolve;});
+ const account={id:'fixture-account',email:'phone@example.test'};fixture.vault.set('session',JSON.stringify({url:'https://flix-test.example',sessionToken:'x'.repeat(64),account}));let reports=0;const binary=Buffer.from('!<arch>\nfixture-package'),release={id:'release-fixture',appId:'com.test.fixture',name:'Fixture package',platform:'webos',version:'2',filename:'fixture.ipk',url:'https://packages.example/fixture.ipk',sha256:createHash('sha256').update(binary).digest('hex'),bytes:binary.length,notes:'Fixture only',updatedAt:Date.now()};
+ await page.exposeFunction('fixtureNative',async(plugin:string,method:string,args:any)=>{if(plugin==='CapacitorHttp'&&args.url?.endsWith('/home-remote/ui/release.json')){cloudRequested=true;await heldCloud;return{status:503,data:{}};}if(plugin==='CapacitorHttp'&&args.url===release.url)return{status:200,data:binary.toString('base64')};if(plugin==='CapacitorHttp'&&args.url?.startsWith('https://flix-test.example/')){const route=new URL(args.url).pathname;const data=route.endsWith('/account/session')?{account}:route.endsWith('/access')?{access:{enabled:true,reason:'',checkedAt:Date.now()}}:route.endsWith('/catalog')?{releases:[release]}:route.endsWith('/support')?(reports++,{id:'33333333-3333-4333-8333-333333333333'}):{actions:[],messages:[]};return{status:200,data};}return fixture.invoke(plugin,method,args);});await page.addInitScript('globalThis.__name=(value)=>value');await page.addInitScript(installNativeBoundary);
+ await page.route('https://**/*',r=>r.fulfill({status:503,body:'{}',contentType:'application/json'}));
+ await page.goto('http://127.0.0.1:'+(server.address() as any).port);
+ const frame=page.frameLocator('#original-remote');await frame.locator('#voiceBtn').waitFor();
+ assert.equal(await page.locator('#app').isVisible(),false);checks.push('original remote is default screen');
+ await expect.poll(()=>cloudRequested).toBe(true);
+ await expect(frame.locator('#tvPick')).toBeVisible();
+ checks.push('bundled original page renders while cloud manifest is pending');finishCloud();
+ await expect(frame.getByRole('button',{name:'تثبيت التطبيقات',exact:true})).toBeVisible();
+ assert.deepEqual(errors,[]);
+ mkdirSync('evidence',{recursive:true});await page.screenshot({path:'evidence/startup-page.png'});
+ const result={checks,passed:checks.length,cloudPendingRender:true,pageErrors:errors,physicalPhone:false,tvConnections:0};
+ writeFileSync('evidence/startup-page.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+}finally{await browser.close();await new Promise<void>(r=>server.close(()=>r()));}

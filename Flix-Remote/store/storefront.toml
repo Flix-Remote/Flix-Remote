@@ -1,7 +1,7 @@
 # Accurate draft listing; publication remains blocked pending native and policy review.
 [storefront.submission-info]
 contact-email = "pro_1415@outlook.com"
-review-notes = "Day migration candidate. Requires compatible LAN TV and on-TV consent. Web target lacks native bridge. No paid remote feature unlocks. Optional FLIX account/diagnostics, package distribution and cloud JS updates require App Fair review; do not publish yet."
+review-notes = "Day migration candidate. Requires compatible LAN TV and on-TV consent. Web target lacks native bridge. Remote access API currently shares FLIX media-subscription checks; free-feature eligibility is unresolved. Account inventory, optional diagnostics, package distribution and cloud JS updates require App Fair review; do not publish yet."
 [storefront.metadata]
 name = "FLIX Remote"
 subtitle = "Direct local TV control"
