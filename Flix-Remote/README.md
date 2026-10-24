@@ -9,7 +9,7 @@ Edit the canonical page once; `npm run build` in the parent directory stages the
 for Capacitor and Day. Do not maintain a second remote page here.
 
 Day owns the application lifecycle and renders one custom Piece. UIKit embeds the existing
-Capacitor bridge controller; Android embeds a Capacitor Fragment inside Day's FragmentActivity.
+Capacitor bridge controller; Android embeds a Capacitor Fragment inside Day's Activity.
 The three original native plugins and four standard Capacitor plugins remain source inputs.
 The web target embeds the same page but does not gain native LAN/ADB abilities in a browser.
 
@@ -27,8 +27,9 @@ Then in this directory: `cargo fmt --all -- --check`, `cargo test`,
 `day build -t web-dom`, `day build -t android-mdc`, `day build -t ios-uikit`.
 iOS builds require Apple's supported Xcode host. Day's generated native projects are checked
 in intentionally; derived UI, adapted dependency sources and build outputs are ignored.
-`scripts/stage-day.mjs` in the parent records exact input hashes and the five isolated
-Capacitor host type adaptations; the original npm dependency is never modified.
+`scripts/stage-day.mjs` in the parent records exact input hashes. The Android build adapts
+the generated DayActivity superclass to AppCompatActivity (a FragmentActivity subclass)
+and records before/after hashes under build/bridge; Capacitor and Cordova sources stay unmodified.
 
 ## Review boundaries
 

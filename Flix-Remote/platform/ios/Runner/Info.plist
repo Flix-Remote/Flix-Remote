@@ -68,6 +68,6 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>يحوّل زر صوتي كلامك إلى أمر ترسله من الهاتف إلى التلفزيون.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>يستخدم الميكروفون عند ضغط زر صوتي للإملاء والتحكم بالتلفزيون.</string>
+	<string>Use the microphone only when you press Voice to dictate a TV command.</string>
 </dict>
 </plist>
