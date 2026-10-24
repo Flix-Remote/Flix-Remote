@@ -11,6 +11,15 @@ permissions:
   pages: write
   id-token: write
 jobs:
+  appfair-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: appfair/appfair-apps/.github/actions/appfair-lint@main
+        with:
+          path: Flix-Remote
   app:
     uses: daybrite/actions/.github/workflows/dayapp.yml@v1
     with:
