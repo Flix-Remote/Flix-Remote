@@ -1,0 +1,8 @@
+# CI/simulator only: sends no discovery, pairing or control commands.
+flow:
+  - wait_for: { id: flix_remote }
+  - assert_visible: { id: flix_remote }
+  # Native hosts expose enabled only once the original page's TV selector has
+  # real layout space. Root existence alone produced a black Android capture.
+  - assert_native: { id: flix_remote, enabled: true, only_on: [ios, android] }
+  - screenshot: remote

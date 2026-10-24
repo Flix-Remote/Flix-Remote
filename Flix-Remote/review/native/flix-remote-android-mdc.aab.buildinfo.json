@@ -1,0 +1,70 @@
+{
+  "artifacts": [
+    {
+      "name": "flix-remote-android-mdc.apk",
+      "sha256": "96ad3285124fa48c2c375b33b5ae4985593b17d439541d8aefb21bac74ff21e3"
+    },
+    {
+      "name": "flix-remote-android-mdc.aab",
+      "sha256": "2e87cad9796d90d65cfc9cb6462999790cc9c9e2bbf5fece9335b8bc54298b08"
+    }
+  ],
+  "host": {
+    "arch": "x86_64",
+    "os": "linux"
+  },
+  "inputs": [
+    {
+      "name": "DAY_ANDROID_ABI",
+      "value": "arm64-v8a,x86_64"
+    }
+  ],
+  "payload": [],
+  "profile": "release",
+  "schema": "1.0",
+  "target": "android-mdc",
+  "tools": [
+    {
+      "install": "rustup toolchain install <version> && rustup override set <version>",
+      "key": "rust",
+      "name": "rustc",
+      "version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+    },
+    {
+      "install": "ships with the matching rustc toolchain (rustup)",
+      "key": "cargo",
+      "name": "cargo",
+      "version": "cargo 1.99.1 (5f94df478 2026-08-27)"
+    },
+    {
+      "install": "cargo install day-cli --version <version>",
+      "key": "day",
+      "name": "day CLI",
+      "version": "0.6.0 (release)"
+    },
+    {
+      "install": "https://gradle.org/releases/ (or the project's ./gradlew wrapper)",
+      "key": "gradle",
+      "name": "Gradle",
+      "version": ""
+    },
+    {
+      "install": "brew install openjdk@<major> / apt install openjdk-<major>-jdk",
+      "key": "java",
+      "name": "JDK",
+      "version": "javac 21.0.12.1"
+    },
+    {
+      "install": "sdkmanager 'ndk;<version>' — https://developer.android.com/ndk/downloads",
+      "key": "ndk",
+      "name": "Android NDK",
+      "version": "30.0.16248370"
+    },
+    {
+      "install": "cargo install cargo-ndk",
+      "key": "cargo-ndk",
+      "name": "cargo-ndk",
+      "version": "cargo-ndk 4.1.2"
+    }
+  ]
+}

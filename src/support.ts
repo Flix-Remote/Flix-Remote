@@ -5,6 +5,8 @@ import { Share } from '@capacitor/share';
 import { request } from './api.ts';
 import { VERSION, BUILD_ID } from './build-info.ts';
 import { AccessGate } from './access.ts';
+import { diagnosticSnapshot, diagnosticText } from './diagnostics.ts';
+import { recentDiagnostics, DIAGNOSTIC_RETENTION_MS } from './diagnostic-retention.ts';
 export interface AccountSession { url: string; sessionToken: string; account: { id: string; email: string } }
 interface Vault { saveSession(input: { value: string }): Promise<void>; readSession(): Promise<{ value?: string }>; clearSession(): Promise<void> }
 const vault = registerPlugin<Vault>('HomeDiscovery');
@@ -18,7 +20,7 @@ export let reportId = '', sharing = false, supportMessage = '', actions: Support
 export let messages: { role: 'user' | 'support'; text: string; at: number }[] = [];
 // Memory-only: reopening the app never restores control permission.
 export let control: ControlGrant | undefined;
-let installationId = '', problem = '';
+let installationId = '', problem = '', problemAt = 0;
 export const accessGate = new AccessGate(async () => {
   if (!account) throw new Error('سجّل دخول حساب FLIX لاستخدام الريموت.');
   const session = account;
@@ -28,15 +30,26 @@ export const accessGate = new AccessGate(async () => {
 });
 let syncQueue: Promise<void> = Promise.resolve();
 let events: DiagnosticEvent[] = [], resolved: string[] = [], pendingResults: Result[] = [];
-const clean = (v: string) => v.replace(/Bearer\s+\S+/gi, 'Bearer [redacted]').replace(/\b[A-Za-z0-9_-]{40,}\b/g, '[redacted]').slice(0, 300);
+const clean = (v: string) => diagnosticText(v, 300);
 export function record(stage: string, outcome: string, message: string, deviceId = '') { events.push({ at: Date.now(), stage, outcome, message: clean(message), deviceId }); events = events.slice(-80); void persist(); }
-async function persist() { await Preferences.set({ key: 'home-remote-diagnostics', value: JSON.stringify({ installationId, reportId, problem, sharing, events, resolved, pendingResults }) }); }
+async function persist() {
+  events = recentDiagnostics(events).slice(-80);
+  pendingResults = recentDiagnostics(pendingResults).slice(-100);
+  if (!problemAt || Date.now() - problemAt >= DIAGNOSTIC_RETENTION_MS) { problem = ''; problemAt = 0; }
+  await Preferences.set({ key: 'home-remote-diagnostics', value: JSON.stringify({ installationId, reportId, problem, problemAt, sharing, events, resolved, pendingResults }) });
+}
+export async function clearLocalDiagnostics() {
+  await stopSharing();
+  events = []; pendingResults = []; resolved = []; problem = ''; problemAt = 0; reportId = ''; messages = [];
+  await persist();
+}
 export function accountUrl(value: string) { const url = new URL(value); if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/' || url.search || url.hash) throw new Error('خدمة حساب FLIX يجب أن تستخدم HTTPS.'); return url.origin; }
 export async function initSupport() {
-  try { const { value } = await Preferences.get({ key: 'home-remote-diagnostics' }); if (value) { const saved = JSON.parse(value); ({ installationId = '', reportId = '', problem = '', events = [], resolved = [], pendingResults = [] } = saved); } } catch { /* local recovery */ }
+  try { const { value } = await Preferences.get({ key: 'home-remote-diagnostics' }); if (value) { const saved = JSON.parse(value); ({ installationId = '', reportId = '', problem = '', problemAt = 0, events = [], resolved = [], pendingResults = [] } = saved); } } catch { /* local recovery */ }
   sharing = false; control = undefined; installationId ||= crypto.randomUUID();
   try { const value = Capacitor.isNativePlatform() ? (await vault.readSession())?.value : sessionStorage.getItem('home-remote-account'); if (value) { account = JSON.parse(value); account!.url = accountUrl(account!.url); await verifyAccount(); } } catch { account = undefined; }
   accessGate.reset();
+  if(account) { try { const current=await household('status') as any; if(current.profiles?.some((p:any)=>p.id===current.selectedProfileId&&p.locked)) await household('lock'); } catch { /* Never restore a manager grant from local storage. */ } }
   await persist();
 }
 export async function login(url: string, email: string, password: string) {
@@ -48,9 +61,24 @@ export async function login(url: string, email: string, password: string) {
   accessGate.reset();
   const value = JSON.stringify(account); if (Capacitor.isNativePlatform()) await vault.saveSession({ value }); else sessionStorage.setItem('home-remote-account', value);
   await persist();
-  await accessGate.refresh();
+  await accessGate.refresh().catch(() => undefined);
 }
 export async function verifyAccount() { if (!account) return; const result = await request<{ account: AccountSession['account'] }>(account.url, '/api/home-remote/account/session', account.sessionToken); if (!result.account?.email) throw new Error('تحقق الحساب غير متاح.'); account.account = result.account; }
+/** Fixed operations only; downloaded HTML never receives the native session credential. */
+export async function household(operation: string, data: Record<string, unknown> = {}) {
+  if(operation === 'login') { await login('https://flix-admin-tan.vercel.app', String(data.email || ''), String(data.password || '')); return household('status'); }
+  if(operation === 'logout') { await logout(); return { signedIn: false }; }
+  if(!account) return { signedIn: false };
+  const routes: Record<string, [string,string]> = {
+    status:['profiles/status','GET'], select:['profiles/select','POST'], lock:['profiles/lock','POST'], overview:['manager/overview','GET'],
+    'profile-add':['manager/profile-add','POST'], 'profile-access':['manager/profile-access','POST'], 'profile-remove':['manager/profile-remove','POST'],
+    'account-access':['manager/account-access','POST'], 'installation-access':['manager/installation-access','POST'], 'subscription-grant':['manager/subscription-grant','POST'], 'subscription-stop':['manager/subscription-stop','POST'],
+  };
+  const route=routes[operation]; if(!route) throw Error('عملية غير مسموحة.');
+  const result = await request<Record<string, unknown>>(account.url, '/api/home-remote/'+route[0], account.sessionToken, route[1], route[1]==='POST'?data:undefined);
+  if(['select','lock'].includes(operation)) { accessGate.reset(); await accessGate.refresh(); revokeControl(); }
+  return { ...result, signedIn: true };
+}
 export async function logout() {
   accessGate.reset();
   await stopSharing(); const previous = account; account = undefined; actions = []; reportId = ''; resolved = []; pendingResults = []; problem = ''; events = []; messages = [];
@@ -74,12 +102,11 @@ export async function stopSharing() {
   supportMessage = 'توقفت مشاركة التشخيص والتحكم. عند انقطاع الإنترنت ينتهي اتصال الدعم خلال 90 ثانية.';
 }
 export function diagnostics(data: unknown) {
-  const raw = data as Record<string, unknown>, list = (key: string) => Array.isArray(raw[key]) ? [...raw[key] as unknown[]] : [];
-  const diagnostics = { directConnected: raw.directConnected, connectionMode: raw.connectionMode, deviceCount: raw.deviceCount, selectedDeviceId: raw.selectedDeviceId, devices: list('devices').slice(0, 30), apps: list('apps').slice(0, 100), settings: list('settings').slice(0, 30), packages: list('packages').slice(0, 50), receipts: list('receipts').slice(-30), events: [...events] as unknown[], truncated: false };
-  const body = { app: 'home-remote', version: VERSION, buildId: BUILD_ID, platform: Capacitor.getPlatform(), installationId, id: reportId || undefined, problem, sharing, control: sharing && control && control.expiresAt > Date.now() ? control : undefined, diagnostics };
+  const diagnostics = diagnosticSnapshot(data, events);
+  const body = { app: 'home-remote', version: VERSION, buildId: BUILD_ID, platform: Capacitor.getPlatform(), installationId, id: reportId || undefined, problem: diagnosticText(problem, 1200), sharing, control: sharing && control && control.expiresAt > Date.now() ? control : undefined, diagnostics };
   const bytes = () => new TextEncoder().encode(JSON.stringify(body)).byteLength;
   for (const key of ['events', 'apps', 'settings', 'packages', 'receipts', 'devices'] as const) {
-    while (bytes() > 60000 && diagnostics[key].length) { const keep = Math.floor(diagnostics[key].length * .7); diagnostics[key] = key === 'events' ? keep ? diagnostics[key].slice(-keep) : [] : diagnostics[key].slice(0, keep); diagnostics.truncated = true; }
+    while (bytes() > 60000 && diagnostics[key].length) { const list = diagnostics[key], keep = Math.floor(list.length * .7); list.splice(key === 'events' ? 0 : keep, list.length - keep); diagnostics.truncated = true; }
   }
   return body;
 }
@@ -100,7 +127,7 @@ export async function pollSupport() {
 }
 export async function syncSupport(data: unknown, start?: { problem: string }) {
   if (!account || (!sharing && !start)) return;
-  if (start) { problem = start.problem.slice(0, 1200); sharing = true; await persist(); }
+  if (start) { problem = start.problem.slice(0, 1200); problemAt = Date.now(); sharing = true; await persist(); }
   const task = syncQueue.catch(() => undefined).then(async () => {
     if (!account || !sharing) return;
     try {

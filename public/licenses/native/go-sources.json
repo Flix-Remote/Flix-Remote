@@ -1,0 +1,52 @@
+[
+  {
+    "Path": "golang.org/x/crypto",
+    "Version": "v0.43.0",
+    "Sum": "h1:dduJYIi3A3KOfdGOHX8AVZ/jGiyPa3IbBozJ5kNuE04=",
+    "GoModSum": "h1:BFbav4mRNlXJL4wNeejLpWxB7wMbc79PdRGhWKncxR0=",
+    "license": "BSD-3-Clause",
+    "license_sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "source_url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.43.0.zip",
+    "binary_reproduction_verified": false
+  },
+  {
+    "Path": "golang.org/x/net",
+    "Version": "v0.45.0",
+    "Sum": "h1:RLBg5JKixCy82FtLJpeNlVM0nrSqpCRYzVU1n8kj0tM=",
+    "GoModSum": "h1:ECOoLqd5U3Lhyeyo/QDCEVQ4sNgYsqvCZ722XogGieY=",
+    "license": "BSD-3-Clause",
+    "license_sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "source_url": "https://proxy.golang.org/golang.org/x/net/@v/v0.45.0.zip",
+    "binary_reproduction_verified": false
+  },
+  {
+    "Path": "golang.org/x/sys",
+    "Version": "v0.37.0",
+    "Sum": "h1:fdNQudmxPjkdUTPnLn5mdQv7Zwvbvpaxqs831goi9kQ=",
+    "GoModSum": "h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=",
+    "license": "BSD-3-Clause",
+    "license_sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "source_url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.37.0.zip",
+    "binary_reproduction_verified": false
+  },
+  {
+    "Path": "golang.org/x/term",
+    "Version": "v0.36.0",
+    "Sum": "h1:zMPR+aF8gfksFprF/Nc/rd1wRS1EI6nDBGyWAvDzx2Q=",
+    "GoModSum": "h1:Qu394IJq6V6dCBRgwqshf3mPF85AqzYEzofzRdZkWss=",
+    "license": "BSD-3-Clause",
+    "license_sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "source_url": "https://proxy.golang.org/golang.org/x/term/@v/v0.36.0.zip",
+    "binary_reproduction_verified": false
+  },
+  {
+    "Path": "golang.org/x/text",
+    "Version": "v0.30.0",
+    "Sum": "h1:yznKA/E9zq54KzlzBEAWn1NXSQ8DIp/NYMy88xJjl4k=",
+    "GoModSum": "h1:yDdHFIX9t+tORqspjENWgzaCVXgk0yYnYuSZ8UzzBVM=",
+    "license": "BSD-3-Clause",
+    "license_sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "source_url": "https://proxy.golang.org/golang.org/x/text/@v/v0.30.0.zip",
+    "binary_reproduction_verified": false
+  }
+]

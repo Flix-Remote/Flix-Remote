@@ -14,26 +14,98 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
-import android.app.Activity;
 import android.content.Intent;
+import android.Manifest;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.speech.RecognitionListener;
+import android.speech.SpeechRecognizer;
 import android.speech.RecognizerIntent;
-import androidx.activity.result.ActivityResult;
-import com.getcapacitor.annotation.ActivityCallback;
+import com.getcapacitor.PermissionState;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
-@CapacitorPlugin(name = "HomeDiscovery")
+@CapacitorPlugin(name = "HomeDiscovery", permissions = {
+    @Permission(alias = "speech", strings = { Manifest.permission.RECORD_AUDIO })
+})
 public class HomeDiscoveryPlugin extends Plugin {
+    private final Handler speechHandler = new Handler(Looper.getMainLooper());
+    private SpeechRecognizer recognizer;
+    private PluginCall speechCall;
+    private Runnable speechTimeout;
     @PluginMethod public void recognizeSpeech(PluginCall call) {
-        Intent intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ar-SA");
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"قل أمر التلفزيون");
-        try { startActivityForResult(call,intent,"speechResult"); } catch(Exception error) { call.reject("الإملاء الصوتي غير متاح؛ اكتب الأمر"); }
+        speechHandler.post(() -> {
+            // EXTRA_PREFER_OFFLINE is only a hint to arbitrary providers. Never
+            // fall back to that service when local recognition is unavailable.
+            if (Build.VERSION.SDK_INT < 31 || !SpeechRecognizer.isOnDeviceRecognitionAvailable(getContext())) {
+                call.reject("الإملاء المحلي غير متاح على هذا الجهاز؛ اكتب الأمر"); return;
+            }
+            if (speechCall != null) { call.reject("الإملاء قيد التشغيل"); return; }
+            if (getPermissionState("speech") != PermissionState.GRANTED) {
+                requestPermissionForAlias("speech", call, "speechPermission"); return;
+            }
+            beginLocalSpeech(call);
+        });
     }
-    @ActivityCallback private void speechResult(PluginCall call,ActivityResult result) {
-        if(call==null)return;
-        if(result.getResultCode()!=Activity.RESULT_OK||result.getData()==null){call.reject("أُلغي الإملاء الصوتي");return;}
-        java.util.ArrayList<String> rows=result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-        JSObject response=new JSObject();response.put("text",rows==null||rows.isEmpty()?"":rows.get(0));call.resolve(response);
+    @PermissionCallback private void speechPermission(PluginCall call) {
+        speechHandler.post(() -> {
+            if (getPermissionState("speech") != PermissionState.GRANTED) {
+                call.reject("لم تسمح بالميكروفون؛ اكتب الأمر"); return;
+            }
+            if (speechCall != null) { call.reject("الإملاء قيد التشغيل"); return; }
+            beginLocalSpeech(call);
+        });
+    }
+    private void beginLocalSpeech(PluginCall call) {
+        if (Build.VERSION.SDK_INT < 31) { call.reject("الإملاء المحلي غير متاح؛ اكتب الأمر"); return; }
+        try {
+            recognizer = SpeechRecognizer.createOnDeviceSpeechRecognizer(getContext());
+            speechCall = call;
+            recognizer.setRecognitionListener(new RecognitionListener() {
+                public void onReadyForSpeech(Bundle p) {}
+                public void onBeginningOfSpeech() {}
+                public void onRmsChanged(float rms) {}
+                public void onBufferReceived(byte[] bytes) {}
+                public void onEndOfSpeech() {}
+                public void onPartialResults(Bundle results) {}
+                public void onEvent(int type, Bundle p) {}
+                public void onError(int code) { finishSpeech(call, null, "تعذر الإملاء المحلي؛ اكتب الأمر"); }
+                public void onResults(Bundle results) {
+                    java.util.ArrayList<String> rows = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    finishSpeech(call, rows == null || rows.isEmpty() ? "" : rows.get(0), null);
+                }
+            });
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA");
+            intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+            speechTimeout = () -> finishSpeech(call, null, "انتهى وقت الإملاء المحلي؛ اكتب الأمر");
+            speechHandler.postDelayed(speechTimeout, 20000);
+            recognizer.startListening(intent);
+        } catch (Exception error) {
+            if (speechCall == null) call.reject("الإملاء المحلي غير متاح؛ اكتب الأمر");
+            else finishSpeech(call, null, "الإملاء المحلي غير متاح؛ اكتب الأمر");
+        }
+    }
+    private void finishSpeech(PluginCall expectedCall, String text, String error) {
+        if (speechCall != expectedCall) return; // Ignore callbacks from a cancelled session.
+        PluginCall call = speechCall; speechCall = null;
+        if (speechTimeout != null) { speechHandler.removeCallbacks(speechTimeout); speechTimeout = null; }
+        SpeechRecognizer previous = recognizer; recognizer = null;
+        if (previous != null) { previous.cancel(); previous.destroy(); }
+        if (call == null) return;
+        if (error != null) call.reject(error);
+        else { JSObject response = new JSObject(); response.put("text", text); call.resolve(response); }
+    }
+    @Override protected void handleOnDestroy() {
+        speechHandler.post(() -> finishSpeech(speechCall, null, "أُلغي الإملاء الصوتي"));
+        super.handleOnDestroy();
+    }
+    @Override protected void handleOnPause() {
+        speechHandler.post(() -> finishSpeech(speechCall, null, "أُلغي الإملاء الصوتي"));
+        super.handleOnPause();
     }
     // Legacy plugin name retained for installed account vault compatibility. No discovery or hub.
     private SecretKey sessionKey() throws Exception {

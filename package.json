@@ -1,6 +1,6 @@
 {
   "name": "flix-home-remote",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,8 +8,10 @@
     "hub": "tsx hub/main.ts",
     "typecheck": "tsc --noEmit",
     "build:ssh": "node scripts/build-ssh.mjs",
-    "build": "node scripts/sync-web-account.mjs && node scripts/sync-remote-page.mjs && node scripts/stage-ui.mjs && node scripts/build-ssh.mjs && node scripts/build-identity.mjs && tsc --noEmit && vite build",
+    "build": "node scripts/sync-web-account.mjs && node scripts/sync-remote-page.mjs && node scripts/stage-ui.mjs && node scripts/build-ssh.mjs && node scripts/build-identity.mjs && tsc --noEmit && vite build && node scripts/stage-day.mjs",
+    "stage:day": "node scripts/stage-day.mjs",
     "test": "tsx --test tests/*.test.ts",
+    "verify:ui-channel": "tsx tests/ios-release-ui-delivery.ts",
     "sync": "npm run build && cap sync",
     "android": "cap open android",
     "ios": "cap open ios"

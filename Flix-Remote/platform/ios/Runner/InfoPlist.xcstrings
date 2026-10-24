@@ -1,0 +1,23 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSMicrophoneUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يستخدم الميكروفون عند ضغط زر صوتي للإملاء والتحكم بالتلفزيون."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the microphone only when you press Voice to dictate a TV command."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

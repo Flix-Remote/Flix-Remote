@@ -1,0 +1,81 @@
+{
+  "source_commit": "ec9ba1f1d59ba3fa013789d22f4a7d7850485d96",
+  "run_id": 40105116949,
+  "android": {
+    "external_maven_artifacts": 79,
+    "all_have_pom_metadata": true,
+    "graph_nodes": 88,
+    "reproduced_artifacts": 0,
+    "gradle_version": "9.6.1",
+    "java_version": "21.0.12.1",
+    "java_vendor": "Eclipse Adoptium"
+  },
+  "ios": {
+    "swiftpm_lock_sha256": "9cd23c0533f728a69e91fffd2b8dedbd15c5570187362e982c93e8b163e2a9ae",
+    "pins": [
+      {
+        "identity": "capacitor-swift-pm",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/ionic-team/capacitor-swift-pm.git",
+        "state": {
+          "revision": "4c7f346d16196e21fbe23d4a7a6fc7af62af6742",
+          "version": "8.5.3"
+        }
+      },
+      {
+        "identity": "iadb-ios",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/h33h/iadb-ios.git",
+        "state": {
+          "revision": "22902f6231c413f2d90accee68f0e59f1c9ea360"
+        }
+      },
+      {
+        "identity": "ion-ios-filesystem",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/ionic-team/ion-ios-filesystem.git",
+        "state": {
+          "revision": "549c18ad9d9bb70d05df37cc3f6f7aa7f5d0ee52",
+          "version": "2.0.1"
+        }
+      }
+    ],
+    "reproduced_xcframeworks": 0
+  },
+  "go_versions": {
+    "android-mdc": "go version go1.25.0 linux/amd64",
+    "ios-uikit": "go version go1.27.3 darwin/arm64"
+  },
+  "locked_go_modules_with_module_and_gomod_sums": {
+    "android-mdc": 5,
+    "ios-uikit": 5
+  },
+  "package_hashes": [
+    {
+      "name": "flix-remote-android-mdc.apk",
+      "sha256": "96ad3285124fa48c2c375b33b5ae4985593b17d439541d8aefb21bac74ff21e3",
+      "bytes": 26453500,
+      "matches_buildinfo": true
+    },
+    {
+      "name": "flix-remote-android-mdc.aab",
+      "sha256": "2e87cad9796d90d65cfc9cb6462999790cc9c9e2bbf5fece9335b8bc54298b08",
+      "bytes": 20723737,
+      "matches_buildinfo": true
+    },
+    {
+      "name": "flix-remote-ios-uikit-unsigned.ipa",
+      "sha256": "968c923f35b882b8ced6e03183d04f2340f69e89cdb6357855b7ad283782efb8",
+      "bytes": 11475213,
+      "matches_buildinfo": true
+    }
+  ],
+  "notes": [
+    "Native sources and notices are inputs, not binary reproduction or store license approval.",
+    "Upstream buildinfo Gradle version remains empty; resolved runtime evidence measures it separately."
+  ],
+  "license_approval": false,
+  "binary_reproduction_verified": false,
+  "physical_devices_tested": false,
+  "tv_connections": 0
+}

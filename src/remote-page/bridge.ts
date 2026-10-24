@@ -3,6 +3,7 @@ import { VERSION, BUILD_ID } from '../build-info.ts';
 type Tv=Device & {capabilities:Capabilities};
 export type Utility='support'|'problem'|'library'|'pair'|'manual'|'settings'|'devices';
 export interface PageHost {
+ household?(operation:string,data:Record<string,unknown>):Promise<unknown>;
  api<T>(path:string,method?:string,data?:unknown):Promise<T>;
  selected():string;
  select(id:string):void;
@@ -21,6 +22,10 @@ export function createPageBridge(h:PageHost){
  return async function request(route:string,method='GET',body:Record<string,any>={}){
   const url=new URL(route,'https://phone.invalid'),action=url.pathname,started=Date.now();let deviceId='';let chosen:Tv|undefined;
   try{
+   if(action==='/api/household'){
+    if(!h.household)throw Error('حدّث نسخة التطبيق لاستخدام الملفات والإدارة.');
+    return await h.household(String(body.operation||'status'),body.data||{});
+   }
    if(action==='/api/native-panel'){if(!['support','problem','library','pair','manual','settings','devices'].includes(body.panel))throw Error('نافذة غير صالحة');h.open(body.panel,body.host);return{ok:true};}
    if(action==='/api/voice/warm')return{ok:true};
    if(action==='/api/discover'){

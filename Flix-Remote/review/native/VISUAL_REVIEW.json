@@ -1,0 +1,136 @@
+{
+  "source_commit": "ec9ba1f1d59ba3fa013789d22f4a7d7850485d96",
+  "run_id": 40105116949,
+  "gallery_images_hash_verified": [
+    {
+      "path": "screenshots-android-mdc/android-mdc/phone/light-ar/remote.png",
+      "sha256": "b16659336783bbf042f7c7950d5f19736bd0a47dbff2d296e1f18df285ea8660",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "path": "screenshots-android-mdc/android-mdc/phone/light/remote.png",
+      "sha256": "8f566e788f60804686a457708d0e54e4475257f3d654a794af90230a1565cc02",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "path": "screenshots-android-mdc/android-mdc/phone/dark-ar/remote.png",
+      "sha256": "c845024981870c0b6696319ce99031cd108a81ea6c2c4e8a997164d0233ab611",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "path": "screenshots-android-mdc/android-mdc/phone/dark/remote.png",
+      "sha256": "8fc82a3cab68a0a0ab362c06b5a21faec1499fe3474f6e15d1f9d843ff29ab01",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "path": "screenshots-android-mdc-tablet/android-mdc/tablet/light-ar/remote.png",
+      "sha256": "8e699e318c67d586927a4f6eb2f808dc6865bb9ea55ddc172b3711a5bc1f8d3a",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "path": "screenshots-android-mdc-tablet/android-mdc/tablet/light/remote.png",
+      "sha256": "218b07c74f21aa9b72c2e2ae704ebdf10d58b087b0a10769e1c281ab14847c1f",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "path": "screenshots-android-mdc-tablet/android-mdc/tablet/dark-ar/remote.png",
+      "sha256": "925cfca8d14c2a37b64f7c352d36964b3c38a4379ed26916c717653627ad15b1",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "path": "screenshots-android-mdc-tablet/android-mdc/tablet/dark/remote.png",
+      "sha256": "925cfca8d14c2a37b64f7c352d36964b3c38a4379ed26916c717653627ad15b1",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "path": "screenshots-ios-uikit/ios-uikit/phone/light-ar/remote.png",
+      "sha256": "a5f1dee593bbcb0cb6c008c09327f6a9b241779d40ebba9c05d3a6904e68b991",
+      "width": 1146,
+      "height": 2034
+    },
+    {
+      "path": "screenshots-ios-uikit/ios-uikit/phone/light/remote.png",
+      "sha256": "c43fa27e386dfd06bfcce0591201e76c4a2c67132495c73e25ddbcd1f1a8cf01",
+      "width": 1146,
+      "height": 2034
+    },
+    {
+      "path": "screenshots-ios-uikit/ios-uikit/phone/dark-ar/remote.png",
+      "sha256": "7271d4ce35a792c50bfd50b6e4c76454c59e3661e23264471d6dc781c55a5468",
+      "width": 1146,
+      "height": 2034
+    },
+    {
+      "path": "screenshots-ios-uikit/ios-uikit/phone/dark/remote.png",
+      "sha256": "ef31666cc2fdda7652d2a07f19948f443d171169f97d91db2a2022d84189082c",
+      "width": 1146,
+      "height": 2034
+    },
+    {
+      "path": "screenshots-ios-uikit-ipad/ios-uikit/ipad/light-ar/remote.png",
+      "sha256": "d443fb35abce5fc8fbfa4f80f4c6b16a103d021c824b89d3075e452b68396452",
+      "width": 2064,
+      "height": 2752
+    },
+    {
+      "path": "screenshots-ios-uikit-ipad/ios-uikit/ipad/light/remote.png",
+      "sha256": "739daaeaa1c31e66c9556615f1d4dd8c35d46f6b4a3cfb0d4280d20d4051ddba",
+      "width": 2064,
+      "height": 2752
+    },
+    {
+      "path": "screenshots-ios-uikit-ipad/ios-uikit/ipad/dark-ar/remote.png",
+      "sha256": "5ac2097c674e892d7de6dac80d1f1dabcd5fa1e072a22a1f418779a75ffa3ea9",
+      "width": 2064,
+      "height": 2752
+    },
+    {
+      "path": "screenshots-ios-uikit-ipad/ios-uikit/ipad/dark/remote.png",
+      "sha256": "9ad811a031a132cff8cd15d97367fc5a2f6f1705688337f343464776608d5917",
+      "width": 2064,
+      "height": 2752
+    },
+    {
+      "path": "screenshots-web-dom/web-dom/light-ar/remote.png",
+      "sha256": "c4511218c715f7833a9beff002a2bfdcac4fe7685709995c75f48f3b6782e947",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "screenshots-web-dom/web-dom/light/remote.png",
+      "sha256": "ed049218569e79cb73d4b7920f87792654a1774cac9308630556872a4fc2c8f3",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "screenshots-web-dom/web-dom/dark-ar/remote.png",
+      "sha256": "f4c964602b040a448ace8a95dde897fffdd8a1e4726bb3aa4153a58bff588795",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "screenshots-web-dom/web-dom/dark/remote.png",
+      "sha256": "c8d3acd236c9770e1ad560fc501b8ac8d61ec5f9fbf7a37bb103cc275b4a39cb",
+      "width": 2560,
+      "height": 1600
+    }
+  ],
+  "representative_variant_inspected": "light-ar on web, Android phone/tablet, iPhone and iPad",
+  "observations": [
+    "Original Arabic dark remote renders eventually; no real TV selected.",
+    "iPad OK circle overlaps adjacent direction controls; unresolved visual defect.",
+    "iPhone uses in-app capture because full-device simctl capture failed.",
+    "Locale/theme variants do not establish translated or light-theme UI."
+  ],
+  "all_images_visually_reviewed": false,
+  "visual_qualification_passed": false,
+  "physical_device_acceptance": false
+}

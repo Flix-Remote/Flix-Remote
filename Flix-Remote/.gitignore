@@ -1,0 +1,12 @@
+/build/
+/target/
+/resource/assets/public/
+/platform/ios/bridge/HomeDiscoveryPlugin.swift
+/platform/ios/Runner/PrivacyInfo.xcprivacy
+/platform/android/res/xml/file_paths.xml
+/resource/assets/capacitor.config.json
+/.day/
+# Xcode resolves the generated DayPieces package here (Day 0.6 scaffold policy).
+**/*.xcodeproj/project.xcworkspace/
+/platform/android/.gradle/
+/platform/android/**/build/
