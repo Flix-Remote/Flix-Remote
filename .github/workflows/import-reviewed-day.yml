@@ -1,0 +1,23 @@
+name: Import reviewed Day candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.repository == 'Flix-Remote/Flix-Remote'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: codex/day-appfair
+          fetch-depth: 0
+      - name: Fast-forward to the reviewed public commit
+        env:
+          REVIEWED_COMMIT: 87fe2eb8ccd6be27f4ca69802a3df681b71c05f5
+        run: |
+          set -euo pipefail
+          git fetch --no-tags https://github.com/Ahmedzx054/flix-home-remote.git "$REVIEWED_COMMIT"
+          test "$(git rev-parse FETCH_HEAD)" = "$REVIEWED_COMMIT"
+          git merge --ff-only FETCH_HEAD
+          git push origin HEAD:refs/heads/codex/day-appfair
