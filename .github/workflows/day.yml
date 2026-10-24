@@ -4,7 +4,8 @@ on:
     branches: [codex/day-appfair]
   workflow_dispatch:
 concurrency:
-  group: day-candidate-${{ github.ref }}
+  # Preserve evidence for each source revision while a newer matrix runs.
+  group: day-candidate-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 permissions:
   contents: write
