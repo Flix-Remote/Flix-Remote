@@ -1,0 +1,366 @@
+{
+  "source_commit": "bc5ba23c018c55b4272e0c1d46fd7b1e95e44c9c",
+  "run_id": 40095957553,
+  "matrix": [
+    {
+      "artifact": "dayscript-reports-screenshots-android-mdc-1",
+      "cases": 4,
+      "first_attempt_passed": 1,
+      "latest_attempt_passed": 4,
+      "failed_attempts": 3,
+      "attempts": [
+        {
+          "file": "android-mdc-12324-1792847426931966965-0-0.json",
+          "sha256": "cb9d64945afed103e143d282fade98ea5c3716bfcca6e20529e90a294bd149d0",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "light-ar",
+          "status": "failed",
+          "started_at_unix_ms": 1792847426935,
+          "duration_ms": 12568,
+          "failures": [
+            {
+              "op": "assert_native",
+              "error": "\"flix_remote\": native enabled false \u2260 expected true"
+            }
+          ]
+        },
+        {
+          "file": "android-mdc-12324-1792847446234637396-1-0.json",
+          "sha256": "10bf73aa7556e98ac8e2b5361f264a8987d915802708003b360a35b3eaeea2b8",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "light-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847446235,
+          "duration_ms": 19806,
+          "failures": []
+        },
+        {
+          "file": "android-mdc-12324-1792847473216983663-2-0.json",
+          "sha256": "897602c8f6656d7f68aa77ee1dfaee63053d840f6ef884cce50db139cad9cf3b",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "light",
+          "status": "failed",
+          "started_at_unix_ms": 1792847473218,
+          "duration_ms": 13971,
+          "failures": [
+            {
+              "op": "screenshot",
+              "error": "waiting for screenshot render checkpoint"
+            }
+          ]
+        },
+        {
+          "file": "android-mdc-12324-1792847491090912206-3-0.json",
+          "sha256": "22dfca0d973659419bbdab658c6f5c3104b4d6b4e962de63be6a5dbc01511e1f",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "light",
+          "status": "passed",
+          "started_at_unix_ms": 1792847491091,
+          "duration_ms": 17663,
+          "failures": []
+        },
+        {
+          "file": "android-mdc-12324-1792847514906823598-4-0.json",
+          "sha256": "6a082a2c200672210c30917b0ac05c75909a4ef1ba128162deaa69e35aad988d",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "dark-ar",
+          "status": "failed",
+          "started_at_unix_ms": 1792847514907,
+          "duration_ms": 13136,
+          "failures": [
+            {
+              "op": "screenshot",
+              "error": "waiting for screenshot render checkpoint"
+            }
+          ]
+        },
+        {
+          "file": "android-mdc-12324-1792847532563982777-5-0.json",
+          "sha256": "c4e51cfedea18f9885042c38f66d4bfc82cf03f5c8e6308766abaccbc9628c53",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "dark-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847532566,
+          "duration_ms": 18995,
+          "failures": []
+        },
+        {
+          "file": "android-mdc-12324-1792847556169627704-6-0.json",
+          "sha256": "1efc8136fd785d352412cf19aa345b2de7d9b634ed0ce8734d762b3afffe4c2a",
+          "target": "android-mdc",
+          "profile": "phone",
+          "variant": "dark",
+          "status": "passed",
+          "started_at_unix_ms": 1792847556170,
+          "duration_ms": 11363,
+          "failures": []
+        }
+      ]
+    },
+    {
+      "artifact": "dayscript-reports-screenshots-android-mdc-tablet-1",
+      "cases": 4,
+      "first_attempt_passed": 4,
+      "latest_attempt_passed": 4,
+      "failed_attempts": 0,
+      "attempts": [
+        {
+          "file": "android-mdc-7420-1792847171696282944-0-0.json",
+          "sha256": "9a39b671550917884c8dbb6a866fbb0c24b5d839af75b0fd8178951df5489a6a",
+          "target": "android-mdc",
+          "profile": "tablet",
+          "variant": "light-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847171705,
+          "duration_ms": 12497,
+          "failures": []
+        },
+        {
+          "file": "android-mdc-7420-1792847192946069706-1-0.json",
+          "sha256": "b9a5efa7b85c1b1b17a627c52838e91af6fd63fe2561d524d580aa27c995fed4",
+          "target": "android-mdc",
+          "profile": "tablet",
+          "variant": "light",
+          "status": "passed",
+          "started_at_unix_ms": 1792847192947,
+          "duration_ms": 11726,
+          "failures": []
+        },
+        {
+          "file": "android-mdc-7420-1792847210268433989-2-0.json",
+          "sha256": "3b2d2af40feeb119d97d1a80015ec5c862e37e25f7f3a6f2267c14027e6421bb",
+          "target": "android-mdc",
+          "profile": "tablet",
+          "variant": "dark-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847210269,
+          "duration_ms": 10148,
+          "failures": []
+        },
+        {
+          "file": "android-mdc-7420-1792847223381058421-3-0.json",
+          "sha256": "e79710d635f8b55cf39e779148acabf2c688447f2fcf644364d8d4ea202295ed",
+          "target": "android-mdc",
+          "profile": "tablet",
+          "variant": "dark",
+          "status": "passed",
+          "started_at_unix_ms": 1792847223382,
+          "duration_ms": 9152,
+          "failures": []
+        }
+      ]
+    },
+    {
+      "artifact": "dayscript-reports-screenshots-ios-uikit-1",
+      "cases": 4,
+      "first_attempt_passed": 3,
+      "latest_attempt_passed": 3,
+      "failed_attempts": 2,
+      "attempts": [
+        {
+          "file": "ios-uikit-24130-1792847661698742000-0-0.json",
+          "sha256": "402b727144aeacf86d73004cb7963bc8307605a8020f344a511a5e7b9319f980",
+          "target": "ios-uikit",
+          "profile": "phone",
+          "variant": "light-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847663821,
+          "duration_ms": 10967,
+          "failures": []
+        },
+        {
+          "file": "ios-uikit-24130-1792847685160628000-1-0.json",
+          "sha256": "ecc80d071bf60f5726605b058048f09ab366229e1ab134d50ea24f9cca154ee3",
+          "target": "ios-uikit",
+          "profile": "phone",
+          "variant": "light",
+          "status": "failed",
+          "started_at_unix_ms": 1792847685169,
+          "duration_ms": 6661,
+          "failures": [
+            {
+              "op": "assert_native",
+              "error": "\"flix_remote\": native enabled false \u2260 expected true"
+            }
+          ]
+        },
+        {
+          "file": "ios-uikit-24130-1792847701346807000-2-0.json",
+          "sha256": "7612533bd1109f8004c30c947d9e19785b2a1511f84b1f8a4360d7b641391d59",
+          "target": "ios-uikit",
+          "profile": "phone",
+          "variant": "light",
+          "status": "failed",
+          "started_at_unix_ms": 1792847701360,
+          "duration_ms": 6044,
+          "failures": [
+            {
+              "op": "assert_native",
+              "error": "\"flix_remote\": native enabled false \u2260 expected true"
+            }
+          ]
+        },
+        {
+          "file": "ios-uikit-24130-1792847718576193000-3-0.json",
+          "sha256": "2c115eb6472ec72896d896795a408fdb2692dc78ee4eb5ef02654e2e0bbf56ce",
+          "target": "ios-uikit",
+          "profile": "phone",
+          "variant": "dark-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847718580,
+          "duration_ms": 1717,
+          "failures": []
+        },
+        {
+          "file": "ios-uikit-24130-1792847728192364000-4-0.json",
+          "sha256": "3b697e81633fdd6a37e1058862a711ed2b42a6b874a661a6d063a05d2c14b47d",
+          "target": "ios-uikit",
+          "profile": "phone",
+          "variant": "dark",
+          "status": "passed",
+          "started_at_unix_ms": 1792847728211,
+          "duration_ms": 12177,
+          "failures": []
+        }
+      ]
+    },
+    {
+      "artifact": "dayscript-reports-screenshots-ios-uikit-ipad-1",
+      "cases": 4,
+      "first_attempt_passed": 3,
+      "latest_attempt_passed": 4,
+      "failed_attempts": 1,
+      "attempts": [
+        {
+          "file": "ios-uikit-25581-1792847448069779000-0-0.json",
+          "sha256": "5ef4ef680b6d59680d7fc8dd0e3c2d0fc019aa8bfb1292db017013ee0963ce12",
+          "target": "ios-uikit",
+          "profile": "ipad",
+          "variant": "light-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847448345,
+          "duration_ms": 9241,
+          "failures": []
+        },
+        {
+          "file": "ios-uikit-25581-1792847464513415000-1-0.json",
+          "sha256": "acaed6f12616dc0625e1525f4e804968fc5f1261907923d04208d2307eeae486",
+          "target": "ios-uikit",
+          "profile": "ipad",
+          "variant": "light",
+          "status": "failed",
+          "started_at_unix_ms": 1792847464515,
+          "duration_ms": 7351,
+          "failures": [
+            {
+              "op": "assert_native",
+              "error": "\"flix_remote\": native enabled false \u2260 expected true"
+            }
+          ]
+        },
+        {
+          "file": "ios-uikit-25581-1792847485832292000-2-0.json",
+          "sha256": "fecf8d723ab43838befb5d9b3164d7b95479c4ad208019266541921f687d7763",
+          "target": "ios-uikit",
+          "profile": "ipad",
+          "variant": "light",
+          "status": "passed",
+          "started_at_unix_ms": 1792847485846,
+          "duration_ms": 8369,
+          "failures": []
+        },
+        {
+          "file": "ios-uikit-25581-1792847498733512000-3-0.json",
+          "sha256": "ea035ee62814b1f4dcb0c8abfa575e204291703191c3a69a8520c5a53f655cc8",
+          "target": "ios-uikit",
+          "profile": "ipad",
+          "variant": "dark-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792847498751,
+          "duration_ms": 4177,
+          "failures": []
+        },
+        {
+          "file": "ios-uikit-25581-1792847508302312000-4-0.json",
+          "sha256": "30d5ee660f79f318693816d0558731e9b60f62e9bd3d19b7f375b0bcb8ef2c83",
+          "target": "ios-uikit",
+          "profile": "ipad",
+          "variant": "dark",
+          "status": "passed",
+          "started_at_unix_ms": 1792847508309,
+          "duration_ms": 1433,
+          "failures": []
+        }
+      ]
+    },
+    {
+      "artifact": "dayscript-reports-screenshots-web-dom-1",
+      "cases": 4,
+      "first_attempt_passed": 4,
+      "latest_attempt_passed": 4,
+      "failed_attempts": 0,
+      "attempts": [
+        {
+          "file": "web-dom-9538-1792846873474208382-0-0.json",
+          "sha256": "003bd5fda3174d2a01c6c4a648d54ee6b1780f617c84e305990903ac75a06353",
+          "target": "web-dom",
+          "profile": null,
+          "variant": "light-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792846873476,
+          "duration_ms": 1694,
+          "failures": []
+        },
+        {
+          "file": "web-dom-9538-1792846875247104635-1-0.json",
+          "sha256": "b6c7381726d512eedbc87dc89ed3dd4d89fa9a189bc7758e71294ba69052deb7",
+          "target": "web-dom",
+          "profile": null,
+          "variant": "light",
+          "status": "passed",
+          "started_at_unix_ms": 1792846875247,
+          "duration_ms": 1463,
+          "failures": []
+        },
+        {
+          "file": "web-dom-9538-1792846876782383269-2-0.json",
+          "sha256": "cf6b8871628ffc93de6c4e8dc9b2750734de65c896f455695ab502d1b065ea3a",
+          "target": "web-dom",
+          "profile": null,
+          "variant": "dark-ar",
+          "status": "passed",
+          "started_at_unix_ms": 1792846876783,
+          "duration_ms": 1467,
+          "failures": []
+        },
+        {
+          "file": "web-dom-9538-1792846878322840077-3-0.json",
+          "sha256": "0f2d388aa0ec60aa84f8a33faddf5cf9df3b51ccec22f7276645a4eaa99e2db7",
+          "target": "web-dom",
+          "profile": null,
+          "variant": "dark",
+          "status": "passed",
+          "started_at_unix_ms": 1792846878323,
+          "duration_ms": 1463,
+          "failures": []
+        }
+      ]
+    }
+  ],
+  "total_cases": 20,
+  "first_attempt_passed": 15,
+  "latest_attempt_passed": 19,
+  "failed_attempts": 6,
+  "strict_matrix_passed": false,
+  "physical_device_acceptance": false,
+  "store_approved": false,
+  "tv_connections": 0,
+  "phone_actions": 0,
+  "video_server_changes": 0
+}

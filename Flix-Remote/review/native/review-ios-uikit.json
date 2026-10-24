@@ -1,0 +1,80 @@
+{
+  "target": "ios-uikit",
+  "source_commit": "bc5ba23c018c55b4272e0c1d46fd7b1e95e44c9c",
+  "license_approval": false,
+  "binary_reproduction_verified": false,
+  "physical_devices_tested": false,
+  "tv_connections": 0,
+  "swiftpm": [
+    {
+      "path": "platform/ios/DayApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "sha256": "9cd23c0533f728a69e91fffd2b8dedbd15c5570187362e982c93e8b163e2a9ae",
+      "resolved": {
+        "originHash": "54e847813ba0d1e10423489218874e1c9198310ac68db01ef49a22518a79b264",
+        "pins": [
+          {
+            "identity": "capacitor-swift-pm",
+            "kind": "remoteSourceControl",
+            "location": "https://github.com/ionic-team/capacitor-swift-pm.git",
+            "state": {
+              "revision": "4c7f346d16196e21fbe23d4a7a6fc7af62af6742",
+              "version": "8.5.3"
+            }
+          },
+          {
+            "identity": "iadb-ios",
+            "kind": "remoteSourceControl",
+            "location": "https://github.com/h33h/iadb-ios.git",
+            "state": {
+              "revision": "22902f6231c413f2d90accee68f0e59f1c9ea360"
+            }
+          },
+          {
+            "identity": "ion-ios-filesystem",
+            "kind": "remoteSourceControl",
+            "location": "https://github.com/ionic-team/ion-ios-filesystem.git",
+            "state": {
+              "revision": "549c18ad9d9bb70d05df37cc3f6f7aa7f5d0ee52",
+              "version": "2.0.1"
+            }
+          }
+        ],
+        "version": 3
+      }
+    }
+  ],
+  "go_version": "go version go1.27.3 darwin/arm64",
+  "go_modules": [
+    {
+      "Path": "flix.local/home-remote/sshcore",
+      "GoVersion": "1.25.0",
+      "Main": true
+    },
+    {
+      "Path": "golang.org/x/crypto",
+      "Version": "v0.43.0",
+      "Sum": "h1:dduJYIi3A3KOfdGOHX8AVZ/jGiyPa3IbBozJ5kNuE04=",
+      "GoVersion": "1.24.0"
+    },
+    {
+      "Path": "golang.org/x/net",
+      "Version": "v0.45.0"
+    },
+    {
+      "Path": "golang.org/x/sys",
+      "Version": "v0.37.0",
+      "Sum": "h1:fdNQudmxPjkdUTPnLn5mdQv7Zwvbvpaxqs831goi9kQ=",
+      "GoVersion": "1.24.0"
+    },
+    {
+      "Path": "golang.org/x/term",
+      "Version": "v0.36.0",
+      "Sum": "h1:zMPR+aF8gfksFprF/Nc/rd1wRS1EI6nDBGyWAvDzx2Q=",
+      "GoVersion": "1.24.0"
+    },
+    {
+      "Path": "golang.org/x/text",
+      "Version": "v0.30.0"
+    }
+  ]
+}

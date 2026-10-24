@@ -31,6 +31,18 @@ native build artifacts. POM claims are evidence inputs, not a compatibility verd
 Exact Maven source revisions, build environments, reproduced outputs and matching
 binary verification must be supplied before App Fair submission.
 
+The current `bc5ba23` build now supplies `native/review-android-mdc.json`:
+79 external Maven files with SHA-256 and POM metadata, plus the full 88-node
+resolved graph. `libadb-android` calls its license "Other" and `ionfilesystem-android`
+calls it "License"; those labels are not a license grant. Zero Maven files have
+verified source-to-binary reproduction. `native/review-ios-uikit.json` supplies
+the exact three SwiftPM pins and lock hash, alongside the six-entry Go module
+lists (including the main module). Some Go entries lack sums in the resolved
+list and the buildinfo Gradle version is empty. These are explicit completeness
+gaps, not evidence that matching source/build environments have been established.
+`native/NATIVE_SUMMARY.json` and the copied buildinfo files preserve this evidence;
+all three APK/AAB/unsigned IPA hashes were checked against their buildinfo.
+
 ## Assets and content
 
 `public/icon.svg` and `Flix-Remote/resource/icon.svg` are identical FLIX source SVGs
@@ -49,6 +61,7 @@ secret audit.
 ## Decision
 
 The license source review and notice repair are complete for the inventoried
-Cargo/npm graph. **Release approval remains blocked** on the final native graph,
-Maven reproduction, LGPL/store compatibility and rights for submitted content.
+Cargo/npm graph, and the resolved native graphs have been collected. **Release
+approval remains blocked** on native source/license completeness, Maven
+reproduction, LGPL/store compatibility and rights for submitted content.
 Neither SPDX metadata nor passing App Fair lint closes these obligations.

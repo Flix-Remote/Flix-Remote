@@ -1,0 +1,78 @@
+{
+  "source_commit": "bc5ba23c018c55b4272e0c1d46fd7b1e95e44c9c",
+  "run_id": 40095957553,
+  "android": {
+    "external_maven_artifacts": 79,
+    "all_have_pom_metadata": true,
+    "graph_nodes": 88,
+    "reproduced_artifacts": 0,
+    "ambiguous_pom_license_names": [
+      "com.github.MuntashirAkon:libadb-android:3.1.1",
+      "io.ionic.libs:ionfilesystem-android:1.1.1"
+    ]
+  },
+  "ios": {
+    "swiftpm_lock_sha256": "9cd23c0533f728a69e91fffd2b8dedbd15c5570187362e982c93e8b163e2a9ae",
+    "pins": [
+      {
+        "identity": "capacitor-swift-pm",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/ionic-team/capacitor-swift-pm.git",
+        "state": {
+          "revision": "4c7f346d16196e21fbe23d4a7a6fc7af62af6742",
+          "version": "8.5.3"
+        }
+      },
+      {
+        "identity": "iadb-ios",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/h33h/iadb-ios.git",
+        "state": {
+          "revision": "22902f6231c413f2d90accee68f0e59f1c9ea360"
+        }
+      },
+      {
+        "identity": "ion-ios-filesystem",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/ionic-team/ion-ios-filesystem.git",
+        "state": {
+          "revision": "549c18ad9d9bb70d05df37cc3f6f7aa7f5d0ee52",
+          "version": "2.0.1"
+        }
+      }
+    ]
+  },
+  "go_versions": {
+    "android": "go version go1.25.0 linux/amd64",
+    "ios": "go version go1.27.3 darwin/arm64"
+  },
+  "notes": [
+    "POM licenses and SCM URLs are claims; exact source-to-binary reproduction remains unverified.",
+    "Go module lists include the main module; entries without Sum require source completeness follow-up.",
+    "Some buildinfo tool fields are empty; this is not a complete reproducibility manifest."
+  ],
+  "license_approval": false,
+  "binary_reproduction_verified": false,
+  "physical_devices_tested": false,
+  "tv_connections": 0,
+  "package_hashes": [
+    {
+      "name": "flix-remote-android-mdc.aab",
+      "sha256": "e657b7c028b76aac8399d7982893a5c19388c339745ea0a8012fc5fa44883cd1",
+      "matches_buildinfo": true,
+      "bytes": 19153298
+    },
+    {
+      "name": "flix-remote-android-mdc.apk",
+      "sha256": "87159a763ff9b13697230f4159f489aaba1dfff98344f1e775a2f3fb690173c5",
+      "matches_buildinfo": true,
+      "bytes": 24888474
+    },
+    {
+      "name": "flix-remote-ios-uikit-unsigned.ipa",
+      "sha256": "0074d4b640efe5ba323c7416d6903f5d52435d02440fb78c8b433b5fa2cfab54",
+      "matches_buildinfo": true,
+      "bytes": 9906391
+    }
+  ]
+}

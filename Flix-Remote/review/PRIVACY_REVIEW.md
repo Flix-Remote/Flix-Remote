@@ -40,6 +40,13 @@ size. Free-text filtering cannot prove the absence of every possible secret.
    selected package hosts, account presence and exports require accurate processor
    and store data disclosures. The policy now describes those actual paths.
 
+The actual current unsigned IPA (`0074d4b6…cfab54`) was also inspected. Its main
+manifest declares UserDefaults/file-timestamp reasons, no tracking domains and
+`NSPrivacyTracking=false`; it does not declare collected-data types. This does
+not mean the app collects no data: the account-linked inventory and optional
+diagnostics above still require accurate store privacy declarations and review.
+The package has no embedded provisioning profile and was not installed or signed.
+
 The source audit is completed; release privacy approval is blocked. Resolving these
 gates needs actual service/privacy behavior and App Fair review. Wording changes or
 passing builds cannot close them. See `../PRIVACY.md` for the candid disclosure.

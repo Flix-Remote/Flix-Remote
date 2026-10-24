@@ -1,0 +1,23 @@
+{
+  "source_commit": "bc5ba23c018c55b4272e0c1d46fd7b1e95e44c9c",
+  "ipa_sha256": "0074d4b640efe5ba323c7416d6903f5d52435d02440fb78c8b433b5fa2cfab54",
+  "bundle_identifier": "com.flix.homeremote",
+  "version": "0.6.0",
+  "build": "1",
+  "embedded_mobileprovision": false,
+  "main_privacy_manifest": {
+    "NSPrivacyTracking": false,
+    "NSPrivacyTrackingDomains": [],
+    "NSPrivacyCollectedDataTypes": "not declared",
+    "NSPrivacyAccessedAPITypes": {
+      "UserDefaults": [
+        "CA92.1"
+      ],
+      "FileTimestamp": [
+        "C617.1"
+      ]
+    }
+  },
+  "privacy_approval": false,
+  "note": "No tracking declaration is not a statement of no data collection. Actual account inventory, diagnostics and processors need accurate store declarations."
+}
