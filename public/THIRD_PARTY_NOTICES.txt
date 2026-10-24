@@ -1,12 +1,15 @@
-FLIX Home Remote v0.3
+FLIX Home Remote / Day 0.6.0 candidate
 
 Go 1.25.x and golang.org/x/crypto v0.43.0: BSD, see licenses/Go.txt and licenses/x-crypto.txt.
+golang.org/x/sys v0.37.0: BSD, see licenses/x-sys.txt.
 libadb-android 3.1.1: Copyright 2021 Muntashir Al-Islam. Apache-2.0 option selected. https://github.com/MuntashirAkon/libadb-android/tree/3.1.1
-spake2-android 2.2.1: Copyright 2021 Muntashir Al-Islam. LGPL-3.0. Exact corresponding upstream source: licenses/spake2-2.2.1-source.zip and https://github.com/MuntashirAkon/spake2-java/tree/2.2.1
+spake2-android 2.2.1: Copyright 2021 Muntashir Al-Islam. LGPL-3.0. Exact corresponding upstream source: licenses/spake2-2.2.1-source.zip and https://github.com/MuntashirAkon/spake2-java/tree/7615ddd680b990e14513ebb66eac4cb0dbf82464
+Source archive SHA-256: 7c8cf3220d9b528a21093b4cc78bd2b4616fba3c3209877d7194aa9e6c149434. The public tag resolves to that revision; this is source availability evidence, not proof that the resolved Maven binary was reproduced.
 This unmodified Gradle dependency can be replaced/relinked by changing its dependency in android/app/build.gradle and rebuilding the app; source and build instructions are supplied with this project. Reverse engineering for debugging modifications to LGPL components is permitted.
 Conscrypt 2.5.3: Apache-2.0. https://github.com/google/conscrypt/tree/2.5.3
 Bouncy Castle 1.81: MIT-style license, https://www.bouncycastle.org/licence.html
 ADBCore iOS revision 22902f6231c413f2d90accee68f0e59f1c9ea360: MIT, https://github.com/h33h/iadb-ios
 Node dependency license texts: licenses/node-dependencies.txt
+Day Cargo and npm runtime license documents: licenses/day-transitive-notices.txt, mapped by document hash in Flix-Remote/review/dependencies.json. MIT licenses on FLIX files do not relicense upstream components. Day and the modified DayActivity remain MPL-2.0; LGPL dependencies remain LGPL-3.0. Native runtime graphs and Maven reproduction remain release gates.
 License copies are bundled under licenses/.
 The Day Android candidate changes the generated DayActivity superclass from FragmentActivity to AppCompatActivity, which extends FragmentActivity, to preserve Capacitor/Cordova compatibility. DayActivity retains its MPL-2.0 license and original lifecycle implementation. platform/android/app/build.gradle.kts records before/after hashes in build/bridge/day-activity-adapter.json; Cargo checkout and Capacitor npm sources remain unchanged. Corresponding Day source: https://github.com/daybrite/day/tree/2c787ecae32a59cf58260aca95b51a4b1bd98d41/toolkits/day-android/java .

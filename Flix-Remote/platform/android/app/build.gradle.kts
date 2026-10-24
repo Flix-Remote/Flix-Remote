@@ -1,4 +1,5 @@
 import java.security.MessageDigest
+import groovy.json.JsonOutput
 
 plugins {
     // Configures this module from Day.toml and the app's pieces
@@ -38,5 +39,23 @@ android {
 dependencies {
     listOf("android", "app", "filesystem", "preferences", "share").forEach { name ->
         implementation(project(":capacitor-$name"))
+    }
+}
+
+// Evidence only: resolving the actual packaged runtime graph is not license approval
+// and does not prove that these Maven binaries can be reproduced from source.
+tasks.register("flixDependencyReview") {
+    doLast {
+        val configuration = configurations.getByName("releaseRuntimeClasspath")
+        val artifacts = configuration.resolvedConfiguration.resolvedArtifacts.map { artifact ->
+            mapOf("coordinate" to artifact.moduleVersion.id.toString(), "name" to artifact.file.name,
+                "sha256" to MessageDigest.getInstance("SHA-256").digest(artifact.file.readBytes()).joinToString("") { "%02x".format(it) })
+        }.sortedBy { it["coordinate"] }
+        val graph = configuration.incoming.resolutionResult.allComponents.map { component ->
+            mapOf("id" to component.id.displayName, "dependencies" to component.dependencies.map { it.requested.displayName }.sorted())
+        }.sortedBy { it["id"].toString() }
+        val out = rootProject.file("../../build/bridge/native-runtime.json")
+        out.parentFile.mkdirs()
+        out.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(mapOf("configuration" to configuration.name, "artifacts" to artifacts, "graph" to graph))) + "\n")
     }
 }

@@ -51,7 +51,12 @@ does not license third-party video content or authorize distributing other apps.
 The official App Fair lint passes all five source/identity/license-presence rules.
 This is not a determination of license compatibility or eligibility.
 The full dependency/asset license inventory and reproducible Maven source builds remain
-release gates. A privacy draft is supplied, not a completed retention/security audit.
+release gates. The source privacy audit, nested diagnostic filtering fix, license
+document bundle and exact LGPL source repair are recorded under `Flix-Remote/review/`.
+The audit found automatic account inventory, media-subscription coupling and missing
+remote retention/erasure behavior. These are explicit blocked publication gates,
+not resolved by the supplied disclosure or a successful build. CI now requests
+phone/tablet, Arabic/English and light/dark coverage with native dependency receipts.
 
 CI pre-release packages, successful mobile/web builds and screenshot walkthroughs are
 required before a catalog PR. App Fair's review and Apple's store review are separate.

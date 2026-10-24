@@ -24,3 +24,4 @@ retainLicense(goLicense,'public/licenses/Go.txt');
 const modules=execFileSync(go,['env','GOMODCACHE'],{cwd:'sshcore',encoding:'utf8'}).trim();
 const license='public/licenses/x-crypto.txt';
 retainLicense(resolve(modules,'golang.org/x/crypto@v0.43.0/LICENSE'),license);
+retainLicense(resolve(modules,'golang.org/x/sys@v0.37.0/LICENSE'),'public/licenses/x-sys.txt');

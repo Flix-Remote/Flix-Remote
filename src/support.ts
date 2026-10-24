@@ -5,6 +5,7 @@ import { Share } from '@capacitor/share';
 import { request } from './api.ts';
 import { VERSION, BUILD_ID } from './build-info.ts';
 import { AccessGate } from './access.ts';
+import { diagnosticSnapshot, diagnosticText } from './diagnostics.ts';
 export interface AccountSession { url: string; sessionToken: string; account: { id: string; email: string } }
 interface Vault { saveSession(input: { value: string }): Promise<void>; readSession(): Promise<{ value?: string }>; clearSession(): Promise<void> }
 const vault = registerPlugin<Vault>('HomeDiscovery');
@@ -28,7 +29,7 @@ export const accessGate = new AccessGate(async () => {
 });
 let syncQueue: Promise<void> = Promise.resolve();
 let events: DiagnosticEvent[] = [], resolved: string[] = [], pendingResults: Result[] = [];
-const clean = (v: string) => v.replace(/Bearer\s+\S+/gi, 'Bearer [redacted]').replace(/\b[A-Za-z0-9_-]{40,}\b/g, '[redacted]').slice(0, 300);
+const clean = (v: string) => diagnosticText(v, 300);
 export function record(stage: string, outcome: string, message: string, deviceId = '') { events.push({ at: Date.now(), stage, outcome, message: clean(message), deviceId }); events = events.slice(-80); void persist(); }
 async function persist() { await Preferences.set({ key: 'home-remote-diagnostics', value: JSON.stringify({ installationId, reportId, problem, sharing, events, resolved, pendingResults }) }); }
 export function accountUrl(value: string) { const url = new URL(value); if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/' || url.search || url.hash) throw new Error('خدمة حساب FLIX يجب أن تستخدم HTTPS.'); return url.origin; }
@@ -90,12 +91,11 @@ export async function stopSharing() {
   supportMessage = 'توقفت مشاركة التشخيص والتحكم. عند انقطاع الإنترنت ينتهي اتصال الدعم خلال 90 ثانية.';
 }
 export function diagnostics(data: unknown) {
-  const raw = data as Record<string, unknown>, list = (key: string) => Array.isArray(raw[key]) ? [...raw[key] as unknown[]] : [];
-  const diagnostics = { directConnected: raw.directConnected, connectionMode: raw.connectionMode, deviceCount: raw.deviceCount, selectedDeviceId: raw.selectedDeviceId, devices: list('devices').slice(0, 30), apps: list('apps').slice(0, 100), settings: list('settings').slice(0, 30), packages: list('packages').slice(0, 50), receipts: list('receipts').slice(-30), events: [...events] as unknown[], truncated: false };
-  const body = { app: 'home-remote', version: VERSION, buildId: BUILD_ID, platform: Capacitor.getPlatform(), installationId, id: reportId || undefined, problem, sharing, control: sharing && control && control.expiresAt > Date.now() ? control : undefined, diagnostics };
+  const diagnostics = diagnosticSnapshot(data, events);
+  const body = { app: 'home-remote', version: VERSION, buildId: BUILD_ID, platform: Capacitor.getPlatform(), installationId, id: reportId || undefined, problem: diagnosticText(problem, 1200), sharing, control: sharing && control && control.expiresAt > Date.now() ? control : undefined, diagnostics };
   const bytes = () => new TextEncoder().encode(JSON.stringify(body)).byteLength;
   for (const key of ['events', 'apps', 'settings', 'packages', 'receipts', 'devices'] as const) {
-    while (bytes() > 60000 && diagnostics[key].length) { const keep = Math.floor(diagnostics[key].length * .7); diagnostics[key] = key === 'events' ? keep ? diagnostics[key].slice(-keep) : [] : diagnostics[key].slice(0, keep); diagnostics.truncated = true; }
+    while (bytes() > 60000 && diagnostics[key].length) { const list = diagnostics[key], keep = Math.floor(list.length * .7); list.splice(key === 'events' ? 0 : keep, list.length - keep); diagnostics.truncated = true; }
   }
   return body;
 }

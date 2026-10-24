@@ -1,0 +1,19 @@
+{
+  "status": "blocked",
+  "date": "2026-10-24",
+  "store_approved": false,
+  "family_install_url": null,
+  "new_candidate_ci_verified": false,
+  "gates": [
+    {"id":"privacy-inventory-and-diagnostics", "passed":false, "evidence":"PRIVACY_REVIEW.md", "requires":"App Fair assessment of automatic inventory and activity diagnostics"},
+    {"id":"free-remote-features", "passed":false, "evidence":"PRIVACY_REVIEW.md", "requires":"Resolve media-subscription gate on remote access without bypassing account policy"},
+    {"id":"retention-erasure-processors", "passed":false, "evidence":"../PRIVACY.md", "requires":"Implemented verified retention/erasure and deployed processor disclosures"},
+    {"id":"cloud-executable-ui", "passed":false, "evidence":"PRIVACY_REVIEW.md", "requires":"Review Day/Capacitor Piece and cloud update execution model"},
+    {"id":"native-license-reproduction", "passed":false, "evidence":"LICENSE_REVIEW.md", "requires":"Final resolved graphs, exact source builds matching Maven binaries, LGPL/store review"},
+    {"id":"native-matrix", "passed":false, "evidence":"RELEASE_REVIEW.md", "requires":"Fresh phone/tablet light/dark ar/en reports for this source"},
+    {"id":"store-listing-and-assets", "passed":false, "evidence":"LICENSE_REVIEW.md", "requires":"Final localization, package/artwork rights and accurate listing/privacy labels"},
+    {"id":"day-pages-and-tagged-prerelease", "passed":false, "requires":"Required generated Pages, tagged pre-release and full-source catalog submission after eligibility review"},
+    {"id":"publisher-and-store-approval", "passed":false, "requires":"Actual App Fair and store acceptance/signing; Publisher installation alone is insufficient"}
+  ],
+  "constraints": {"tv_connections":0, "phone_actions":0, "video_server_changes":0, "paid_enrollments":0}
+}

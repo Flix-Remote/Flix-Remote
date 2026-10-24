@@ -2,7 +2,11 @@
 
 This directory records review inputs. It is not an approval or a reproducible-build certificate.
 
-`dependencies.json` records exact Cargo/npm identities and their declared license fields.
+`dependencies.json` records exact Cargo/npm identities, declared license fields and
+hashes of the collected upstream license documents. `LICENSE_REVIEW.md` records
+the remaining native reproduction/store obligations. `PRIVACY_REVIEW.md` and
+`../PRIVACY.md` disclose actual data paths and the repaired client transport boundary.
+`release-gates.json` intentionally blocks publication independently of a green CI.
 Regenerate from `cargo metadata --all-features --format-version 1 --locked` saved as
 `../evidence/day-cargo-metadata.json`, then run `python scripts/day-dependency-inventory.py`
 from the client repository root. No local absolute source paths are included in the output.
