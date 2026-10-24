@@ -26,7 +26,7 @@ def main():
         files[f.relative_to(ROOT).as_posix()] = f.read_bytes()
     for f in (ROOT / 'tests/fixtures').rglob('*'):
         if f.is_file(): files[f.relative_to(ROOT).as_posix()] = f.read_bytes()
-    for name in ['tests/native-fixture.ts', 'tests/startup-page.ts', 'tests/original-page.ts', 'scripts/stage-day.mjs', 'scripts/verify-day-web.mjs', 'scripts/prepare-day-source-review.py', 'scripts/day-dependency-inventory.py', 'scripts/day-native-review.py', 'DAY_MIGRATION.md', '.github/workflows/day.yml']:
+    for name in ['tests/native-fixture.ts', 'tests/startup-page.ts', 'tests/original-page.ts', 'scripts/stage-day.mjs', 'scripts/verify-day-web.mjs', 'scripts/prepare-day-source-review.py', 'scripts/day-dependency-inventory.py', 'scripts/day-native-review.py', 'scripts/day-native-sources.py', 'scripts/day-maven-source-evidence.py', 'DAY_MIGRATION.md', '.github/workflows/day.yml']:
         files[name] = (ROOT / name).read_bytes()
     exclude = {'build', 'target', '.day', '.git'}
     generated = {'platform/ios/bridge/HomeDiscoveryPlugin.swift', 'platform/ios/Runner/PrivacyInfo.xcprivacy',

@@ -2,11 +2,11 @@
   "artifacts": [
     {
       "name": "flix-remote-android-mdc.apk",
-      "sha256": "87159a763ff9b13697230f4159f489aaba1dfff98344f1e775a2f3fb690173c5"
+      "sha256": "96ad3285124fa48c2c375b33b5ae4985593b17d439541d8aefb21bac74ff21e3"
     },
     {
       "name": "flix-remote-android-mdc.aab",
-      "sha256": "e657b7c028b76aac8399d7982893a5c19388c339745ea0a8012fc5fa44883cd1"
+      "sha256": "2e87cad9796d90d65cfc9cb6462999790cc9c9e2bbf5fece9335b8bc54298b08"
     }
   ],
   "host": {

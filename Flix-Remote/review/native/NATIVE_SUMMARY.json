@@ -1,15 +1,14 @@
 {
-  "source_commit": "bc5ba23c018c55b4272e0c1d46fd7b1e95e44c9c",
-  "run_id": 40095957553,
+  "source_commit": "ec9ba1f1d59ba3fa013789d22f4a7d7850485d96",
+  "run_id": 40105116949,
   "android": {
     "external_maven_artifacts": 79,
     "all_have_pom_metadata": true,
     "graph_nodes": 88,
     "reproduced_artifacts": 0,
-    "ambiguous_pom_license_names": [
-      "com.github.MuntashirAkon:libadb-android:3.1.1",
-      "io.ionic.libs:ionfilesystem-android:1.1.1"
-    ]
+    "gradle_version": "9.6.1",
+    "java_version": "21.0.12.1",
+    "java_vendor": "Eclipse Adoptium"
   },
   "ios": {
     "swiftpm_lock_sha256": "9cd23c0533f728a69e91fffd2b8dedbd15c5570187362e982c93e8b163e2a9ae",
@@ -40,39 +39,43 @@
           "version": "2.0.1"
         }
       }
-    ]
+    ],
+    "reproduced_xcframeworks": 0
   },
   "go_versions": {
-    "android": "go version go1.25.0 linux/amd64",
-    "ios": "go version go1.27.3 darwin/arm64"
+    "android-mdc": "go version go1.25.0 linux/amd64",
+    "ios-uikit": "go version go1.27.3 darwin/arm64"
   },
+  "locked_go_modules_with_module_and_gomod_sums": {
+    "android-mdc": 5,
+    "ios-uikit": 5
+  },
+  "package_hashes": [
+    {
+      "name": "flix-remote-android-mdc.apk",
+      "sha256": "96ad3285124fa48c2c375b33b5ae4985593b17d439541d8aefb21bac74ff21e3",
+      "bytes": 26453500,
+      "matches_buildinfo": true
+    },
+    {
+      "name": "flix-remote-android-mdc.aab",
+      "sha256": "2e87cad9796d90d65cfc9cb6462999790cc9c9e2bbf5fece9335b8bc54298b08",
+      "bytes": 20723737,
+      "matches_buildinfo": true
+    },
+    {
+      "name": "flix-remote-ios-uikit-unsigned.ipa",
+      "sha256": "968c923f35b882b8ced6e03183d04f2340f69e89cdb6357855b7ad283782efb8",
+      "bytes": 11475213,
+      "matches_buildinfo": true
+    }
+  ],
   "notes": [
-    "POM licenses and SCM URLs are claims; exact source-to-binary reproduction remains unverified.",
-    "Go module lists include the main module; entries without Sum require source completeness follow-up.",
-    "Some buildinfo tool fields are empty; this is not a complete reproducibility manifest."
+    "Native sources and notices are inputs, not binary reproduction or store license approval.",
+    "Upstream buildinfo Gradle version remains empty; resolved runtime evidence measures it separately."
   ],
   "license_approval": false,
   "binary_reproduction_verified": false,
   "physical_devices_tested": false,
-  "tv_connections": 0,
-  "package_hashes": [
-    {
-      "name": "flix-remote-android-mdc.aab",
-      "sha256": "e657b7c028b76aac8399d7982893a5c19388c339745ea0a8012fc5fa44883cd1",
-      "matches_buildinfo": true,
-      "bytes": 19153298
-    },
-    {
-      "name": "flix-remote-android-mdc.apk",
-      "sha256": "87159a763ff9b13697230f4159f489aaba1dfff98344f1e775a2f3fb690173c5",
-      "matches_buildinfo": true,
-      "bytes": 24888474
-    },
-    {
-      "name": "flix-remote-ios-uikit-unsigned.ipa",
-      "sha256": "0074d4b640efe5ba323c7416d6903f5d52435d02440fb78c8b433b5fa2cfab54",
-      "matches_buildinfo": true,
-      "bytes": 9906391
-    }
-  ]
+  "tv_connections": 0
 }

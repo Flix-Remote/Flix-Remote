@@ -15,19 +15,49 @@ try{
  inspected=page;page.setDefaultTimeout(12000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  let finishCloud!:()=>void,cloudRequested=false;
+ let finishVault!:()=>void,vaultRequested=false;
+ const heldVault=new Promise<void>(resolve=>{finishVault=resolve;});
  const heldCloud=new Promise<void>(resolve=>{finishCloud=resolve;});
  const account={id:'fixture-account',email:'phone@example.test'};fixture.vault.set('session',JSON.stringify({url:'https://flix-test.example',sessionToken:'x'.repeat(64),account}));let reports=0;const binary=Buffer.from('!<arch>\nfixture-package'),release={id:'release-fixture',appId:'com.test.fixture',name:'Fixture package',platform:'webos',version:'2',filename:'fixture.ipk',url:'https://packages.example/fixture.ipk',sha256:createHash('sha256').update(binary).digest('hex'),bytes:binary.length,notes:'Fixture only',updatedAt:Date.now()};
- await page.exposeFunction('fixtureNative',async(plugin:string,method:string,args:any)=>{if(plugin==='CapacitorHttp'&&args.url?.endsWith('/home-remote/ui/release.json')){cloudRequested=true;await heldCloud;return{status:503,data:{}};}if(plugin==='CapacitorHttp'&&args.url===release.url)return{status:200,data:binary.toString('base64')};if(plugin==='CapacitorHttp'&&args.url?.startsWith('https://flix-test.example/')){const route=new URL(args.url).pathname;const data=route.endsWith('/account/session')?{account}:route.endsWith('/access')?{access:{enabled:true,reason:'',checkedAt:Date.now()}}:route.endsWith('/catalog')?{releases:[release]}:route.endsWith('/support')?(reports++,{id:'33333333-3333-4333-8333-333333333333'}):{actions:[],messages:[]};return{status:200,data};}return fixture.invoke(plugin,method,args);});await page.addInitScript('globalThis.__name=(value)=>value');await page.addInitScript(installNativeBoundary);
+ await page.exposeFunction('fixtureNative',async(plugin:string,method:string,args:any)=>{if(plugin==='HomeDiscovery'&&method==='readSession'){vaultRequested=true;await heldVault;}if(plugin==='CapacitorHttp'&&args.url?.endsWith('/home-remote/ui/release.json')){cloudRequested=true;await heldCloud;return{status:503,data:{}};}if(plugin==='CapacitorHttp'&&args.url===release.url)return{status:200,data:binary.toString('base64')};if(plugin==='CapacitorHttp'&&args.url?.startsWith('https://flix-test.example/')){const route=new URL(args.url).pathname;const data=route.endsWith('/account/session')?{account}:route.endsWith('/access')?{access:{enabled:true,reason:'',checkedAt:Date.now()}}:route.endsWith('/catalog')?{releases:[release]}:route.endsWith('/support')?(reports++,{id:'33333333-3333-4333-8333-333333333333'}):{actions:[],messages:[]};return{status:200,data};}return fixture.invoke(plugin,method,args);});await page.addInitScript('globalThis.__name=(value)=>value');await page.addInitScript(installNativeBoundary);
  await page.route('https://**/*',r=>r.fulfill({status:503,body:'{}',contentType:'application/json'}));
  await page.goto('http://127.0.0.1:'+(server.address() as any).port);
  const frame=page.frameLocator('#original-remote');await frame.locator('#voiceBtn').waitFor();
  assert.equal(await page.locator('#app').isVisible(),false);checks.push('original remote is default screen');
+ await expect.poll(()=>vaultRequested).toBe(true);
+ await expect(frame.locator('#tvPick')).toBeVisible();
+ assert.ok(await frame.locator('#tvPick').evaluate(e=>e.getBoundingClientRect().width>100));
+ assert.equal(cloudRequested,false);
+ checks.push('strict original DOM layout renders before native vault/account initialization completes');
+ finishVault();
  await expect.poll(()=>cloudRequested).toBe(true);
  await expect(frame.locator('#tvPick')).toBeVisible();
  checks.push('bundled original page renders while cloud manifest is pending');finishCloud();
  await expect(frame.getByRole('button',{name:'تثبيت التطبيقات',exact:true})).toBeVisible();
  assert.deepEqual(errors,[]);
+ // A fresh install has no account. Its automatic discovery must fail closed
+ // without opening a dialog over a page whose layout assertions still pass.
+ const fresh=await browser.newPage({viewport:{width:390,height:844}}),freshNative=nativeFixture();
+ inspected=fresh;
+ await fresh.exposeFunction('fixtureNative',(plugin:string,method:string,args:any)=>freshNative.invoke(plugin,method,args));
+ await fresh.addInitScript('globalThis.__name=(value)=>value');await fresh.addInitScript(installNativeBoundary);
+ await fresh.route('https://**/*',r=>r.fulfill({status:503,body:'{}',contentType:'application/json'}));
+ await fresh.goto('http://127.0.0.1:'+(server.address() as any).port);
+ const freshFrame=fresh.frameLocator('#original-remote');
+ await expect(fresh.locator('#original-remote')).toHaveAttribute('data-flix-painted','true');
+ const denied=await fresh.evaluate(async()=>await (await window.flixRemotePageRequest('/api/discover',{method:'POST',body:'{}'})).json());
+ assert.equal(denied.ok,false);assert.match(denied.message,/FLIX|دخول|حساب/);
+ assert.equal(await fresh.locator('dialog[open]').count(),0);
+ assert.equal(freshNative.calls.filter(c=>c.plugin==='DirectLan'||c.plugin==='DirectAdb').length,0);
+ await expect(freshFrame.locator('#tvPick')).toBeVisible();
+ assert.equal(await fresh.locator('#original-remote').evaluate(f=>{const r=f.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+30)===f;}),true);
+ checks.push('fresh install remains visibly unobscured while unauthenticated discovery is denied before LAN access');
+ await freshFrame.getByRole('button',{name:'حساب FLIX',exact:true}).click();
+ await expect(freshFrame.getByRole('button',{name:'دخول FLIX',exact:true})).toBeVisible();
+ await expect(freshFrame.locator('dialog[open]')).toBeVisible();
+ checks.push('explicit account action still opens the original FLIX account dialog');
+ await fresh.close();
  mkdirSync('evidence',{recursive:true});await page.screenshot({path:'evidence/startup-page.png'});
  const result={checks,passed:checks.length,cloudPendingRender:true,pageErrors:errors,physicalPhone:false,tvConnections:0};
  writeFileSync('evidence/startup-page.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
-}finally{await browser.close();await new Promise<void>(r=>server.close(()=>r()));}
+}catch(error){if(inspected){console.error((await inspected.locator('body').innerText()).slice(0,4000));await inspected.screenshot({path:'evidence/startup-page-failure.png'});}throw error;}finally{await browser.close();await new Promise<void>(r=>server.close(()=>r()));}

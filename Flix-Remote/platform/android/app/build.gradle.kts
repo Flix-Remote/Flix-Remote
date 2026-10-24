@@ -71,6 +71,8 @@ tasks.register("flixDependencyReview") {
         val out = rootProject.file("../../build/bridge/native-runtime.json")
         out.parentFile.mkdirs()
         out.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(mapOf("configuration" to configuration.name,
+            "gradle_version" to gradle.gradleVersion, "java_version" to System.getProperty("java.version"),
+            "java_vendor" to System.getProperty("java.vendor"),
             "artifact_scope" to "external Maven files; local projects retained in graph and source inventory",
             "artifacts" to artifacts, "graph" to graph))) + "\n")
     }

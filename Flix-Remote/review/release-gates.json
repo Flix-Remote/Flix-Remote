@@ -4,17 +4,74 @@
   "store_approved": false,
   "family_install_url": null,
   "new_candidate_ci_verified": false,
-  "qualification": {"run_id":40095957553,"source_commit":"bc5ba23c018c55b4272e0c1d46fd7b1e95e44c9c","cases":20,"first_attempt_passed":15,"latest_attempt_passed":19,"failed_attempts":6,"evidence":"native/MATRIX_SUMMARY.json"},
+  "qualification": {
+    "run_id": 40105116949,
+    "source_commit": "ec9ba1f1d59ba3fa013789d22f4a7d7850485d96",
+    "first_attempt_passed": 15,
+    "latest_attempt_passed": 18,
+    "failed_attempts": 7,
+    "strict_matrix_passed": false,
+    "cases": 20,
+    "evidence": "native/MATRIX_SUMMARY.json"
+  },
   "gates": [
-    {"id":"privacy-inventory-and-diagnostics", "passed":false, "evidence":"PRIVACY_REVIEW.md", "requires":"App Fair assessment of automatic inventory and activity diagnostics"},
-    {"id":"free-remote-features", "passed":false, "evidence":"PRIVACY_REVIEW.md", "requires":"Resolve media-subscription gate on remote access without bypassing account policy"},
-    {"id":"retention-erasure-processors", "passed":false, "evidence":"../PRIVACY.md", "requires":"Implemented verified retention/erasure and deployed processor disclosures"},
-    {"id":"cloud-executable-ui", "passed":false, "evidence":"PRIVACY_REVIEW.md", "requires":"Review Day/Capacitor Piece and cloud update execution model"},
-    {"id":"native-license-reproduction", "passed":false, "evidence":"LICENSE_REVIEW.md", "requires":"Resolved graphs are collected; establish exact native source/license completeness, matching Maven rebuilds and LGPL/store compatibility"},
-    {"id":"native-matrix", "passed":false, "evidence":"RELEASE_REVIEW.md", "requires":"Resolve iPhone light readiness failure and Android/iPad retry failures; preserve strict assertions and obtain a clean fresh matrix"},
-    {"id":"store-listing-and-assets", "passed":false, "evidence":"LICENSE_REVIEW.md", "requires":"Final localization, package/artwork rights and accurate listing/privacy labels"},
-    {"id":"day-pages-and-tagged-prerelease", "passed":false, "requires":"Required generated Pages, tagged pre-release and full-source catalog submission after eligibility review"},
-    {"id":"publisher-and-store-approval", "passed":false, "requires":"Actual App Fair and store acceptance/signing; Publisher installation alone is insufficient"}
+    {
+      "id": "privacy-inventory-and-diagnostics",
+      "passed": false,
+      "evidence": "PRIVACY_REVIEW.md",
+      "requires": "App Fair assessment of automatic inventory and activity diagnostics"
+    },
+    {
+      "id": "free-remote-features",
+      "passed": false,
+      "evidence": "PRIVACY_REVIEW.md",
+      "requires": "Resolve media-subscription gate on remote access without bypassing account policy"
+    },
+    {
+      "id": "retention-erasure-processors",
+      "passed": false,
+      "evidence": "../PRIVACY.md",
+      "requires": "Implemented verified retention/erasure and deployed processor disclosures"
+    },
+    {
+      "id": "cloud-executable-ui",
+      "passed": false,
+      "evidence": "PRIVACY_REVIEW.md",
+      "requires": "Review Day/Capacitor Piece and cloud update execution model"
+    },
+    {
+      "id": "native-license-reproduction",
+      "passed": false,
+      "evidence": "LICENSE_REVIEW.md",
+      "requires": "Resolved graphs are collected; establish exact native source/license completeness, matching Maven rebuilds and LGPL/store compatibility"
+    },
+    {
+      "id": "native-matrix",
+      "passed": false,
+      "evidence": "RELEASE_REVIEW.md",
+      "requires": "Fix cold native readiness on iPhone/iPad/Android and iPad layout; retain all assertions and obtain a clean fresh matrix"
+    },
+    {
+      "id": "store-listing-and-assets",
+      "passed": false,
+      "evidence": "LICENSE_REVIEW.md",
+      "requires": "Final localization, package/artwork rights and accurate listing/privacy labels"
+    },
+    {
+      "id": "day-pages-and-tagged-prerelease",
+      "passed": false,
+      "requires": "Required generated Pages, tagged pre-release and full-source catalog submission after eligibility review"
+    },
+    {
+      "id": "publisher-and-store-approval",
+      "passed": false,
+      "requires": "Actual App Fair and store acceptance/signing; Publisher installation alone is insufficient"
+    }
   ],
-  "constraints": {"tv_connections":0, "phone_actions":0, "video_server_changes":0, "paid_enrollments":0}
+  "constraints": {
+    "tv_connections": 0,
+    "phone_actions": 0,
+    "video_server_changes": 0,
+    "paid_enrollments": 0
+  }
 }

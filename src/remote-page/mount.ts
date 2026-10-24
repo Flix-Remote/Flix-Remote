@@ -11,6 +11,7 @@ export async function mountOriginalRemote(host:PageHost){
  // The caller starts update() after initialization; its existing idle/dialog
  // guards still protect account forms and in-progress remote interactions.
  let source=bundledSource,idleAfter=0,updating=false;
+ let firstPaint!:()=>void;const painted=new Promise<void>(resolve=>{firstPaint=resolve;});
  const frame=document.createElement('iframe');frame.id='original-remote';frame.title='صفحة ريموت FLIX الأصلية';
  frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-modals');
  const request=createPageBridge(host),browserFetch=window.fetch.bind(window);
@@ -42,10 +43,10 @@ export async function mountOriginalRemote(host:PageHost){
  document.getElementById('useIp').addEventListener('click',()=>phonePanel('manual',document.getElementById('ipInput').value.trim()));
  const notice=document.createElement('div');notice.id='phoneNotice';notice.className='phone-notice';notice.hidden=true;notice.setAttribute('role','status');document.body.append(notice);
  </script>`;
- const setSource=(html:string)=>{frame.srcdoc=html.replace('<head>','<head>'+shim).replace('</body>',additions+'</body>');};
+ const setSource=(html:string)=>{delete frame.dataset.flixPainted;frame.srcdoc=html.replace('<head>','<head>'+shim).replace('</body>',additions+'</body>');};
  const canReload=()=>!document.hidden&&Date.now()>=idleAfter&&!document.body.classList.contains('native-sheet-open')&&!document.querySelector('dialog[open],input:focus,textarea:focus,select:focus')&&!frame.contentDocument?.body.classList.contains('editing')&&!frame.contentDocument?.querySelector('.sheet:not([hidden]),.psheet:not([hidden]),input:focus,textarea:focus,select:focus');
- frame.addEventListener('load',()=>{for(const event of ['pointerdown','pointerup','keydown','touchstart','touchend'])frame.contentDocument?.addEventListener(event,()=>{idleAfter=Date.now()+5000;},{passive:true});});
+ frame.addEventListener('load',()=>{const loaded=frame.contentDocument;for(const event of ['pointerdown','pointerup','keydown','touchstart','touchend'])loaded?.addEventListener(event,()=>{idleAfter=Date.now()+5000;},{passive:true});requestAnimationFrame(()=>requestAnimationFrame(()=>{if(frame.contentDocument===loaded){frame.dataset.flixPainted='true';firstPaint();}}));});
  setSource(source);
  document.body.prepend(frame);document.body.classList.add('remote-original');
- return{update:async()=>{if(updating||!canReload())return;updating=true;try{const next=await latestRemotePage(bundledSource);if(next!==source&&canReload()){source=next;setSource(next);}}finally{updating=false;}},notify:(message:string)=>{const notice=frame.contentDocument?.getElementById('phoneNotice');if(notice){notice.textContent=message;notice.hidden=false;setTimeout(()=>{notice.hidden=true;},7000);}},show:(tvHost?:string)=>{if(tvHost)(frame.contentWindow as any)?.flixRemote?.useHost(tvHost);document.body.classList.add('remote-original');},open:(action:Utility)=>host.open(action)};
+ return{painted,update:async()=>{if(updating||!canReload())return;updating=true;try{const next=await latestRemotePage(bundledSource);if(next!==source&&canReload()){source=next;setSource(next);}}finally{updating=false;}},notify:(message:string)=>{const notice=frame.contentDocument?.getElementById('phoneNotice');if(notice){notice.textContent=message;notice.hidden=false;setTimeout(()=>{notice.hidden=true;},7000);}},show:(tvHost?:string)=>{if(tvHost)(frame.contentWindow as any)?.flixRemote?.useHost(tvHost);document.body.classList.add('remote-original');},open:(action:Utility)=>host.open(action)};
 }

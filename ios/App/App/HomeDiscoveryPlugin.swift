@@ -39,10 +39,13 @@ public class HomeDiscoveryPlugin: CAPPlugin, CAPBridgedPlugin {
     private func startSpeech(_ call: CAPPluginCall) {
         guard speechCall == nil else { call.reject("الاستماع جارٍ"); return }
         guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "ar-SA")), recognizer.isAvailable else { call.reject("الإملاء الصوتي غير متاح الآن؛ اكتب الأمر"); return }
+        guard recognizer.supportsOnDeviceRecognition else { call.reject("الإملاء المحلي غير متاح لهذه اللغة على هذا الجهاز؛ اكتب الأمر"); return }
         do {
             try AVAudioSession.sharedInstance().setCategory(.record, mode: .measurement, options: .duckOthers)
             try AVAudioSession.sharedInstance().setActive(true)
             let engine = AVAudioEngine(), request = SFSpeechAudioBufferRecognitionRequest()
+            // Audio stays on the device; never fall back to Apple's speech service.
+            request.requiresOnDeviceRecognition = true
             request.shouldReportPartialResults = true
             speechCall = call; speechText = ""; speechEngine = engine
             let input = engine.inputNode, format = input.outputFormat(forBus: 0)

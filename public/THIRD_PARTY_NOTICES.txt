@@ -1,6 +1,6 @@
 FLIX Home Remote / Day 0.6.0 candidate
 
-Go 1.25.x and golang.org/x/crypto v0.43.0: BSD, see licenses/Go.txt and licenses/x-crypto.txt.
+Go (actual compiler version recorded in native build evidence) and golang.org/x/crypto v0.43.0: BSD, see licenses/Go.txt and licenses/x-crypto.txt.
 golang.org/x/sys v0.37.0: BSD, see licenses/x-sys.txt.
 libadb-android 3.1.1: Copyright 2021 Muntashir Al-Islam. Apache-2.0 option selected. https://github.com/MuntashirAkon/libadb-android/tree/3.1.1
 spake2-android 2.2.1: Copyright 2021 Muntashir Al-Islam. LGPL-3.0. Exact corresponding upstream source: licenses/spake2-2.2.1-source.zip and https://github.com/MuntashirAkon/spake2-java/tree/7615ddd680b990e14513ebb66eac4cb0dbf82464
@@ -13,3 +13,20 @@ Node dependency license texts: licenses/node-dependencies.txt
 Day Cargo and npm runtime license documents: licenses/day-transitive-notices.txt, mapped by document hash in Flix-Remote/review/dependencies.json. MIT licenses on FLIX files do not relicense upstream components. Day and the modified DayActivity remain MPL-2.0; LGPL dependencies remain LGPL-3.0. Native runtime graphs and Maven reproduction remain release gates.
 License copies are bundled under licenses/.
 The Day Android candidate changes the generated DayActivity superclass from FragmentActivity to AppCompatActivity, which extends FragmentActivity, to preserve Capacitor/Cordova compatibility. DayActivity retains its MPL-2.0 license and original lifecycle implementation. platform/android/app/build.gradle.kts records before/after hashes in build/bridge/day-activity-adapter.json; Cargo checkout and Capacitor npm sources remain unchanged. Corresponding Day source: https://github.com/daybrite/day/tree/2c787ecae32a59cf58260aca95b51a4b1bd98d41/toolkits/day-android/java .
+
+Native source grant supplement (2026-10-24):
+public/licenses/native/sources.json records pinned upstream revisions and SHA-256.
+public/licenses/native/notices.txt preserves actual libadb-android 3.1.1 COPYING/LICENSES
+and ionfilesystem-android 1.1.1 LICENSE documents. Complete pinned source ZIPs are
+in that directory. Select libadb Apache-2.0 where its dual-license grant permits;
+retain per-file BSD/MIT obligations. Ion filesystem is MIT. Binary reproduction
+and store compatibility remain unverified; these sources do not change LGPL spake2.
+
+The native supplement also preserves exact iadb-ios, ionfilesystem-ios and Capacitor SwiftPM wrapper licenses, and actual BSD-3-Clause license bytes for all five locked Go modules. go-sources.json records Go-verified module/go.mod checksums. The Capacitor SwiftPM repository contains binary targets; its wrapper archive is not the implementation source. sources.json separately identifies Capacitor 8.5.3 implementation revision and both binary checksums. Reproduction remains unverified.
+
+Maven source evidence (2026-10-24): licenses/native/maven-embedded-notices.txt
+preserves eighteen original notice documents from 74 versioned source JARs.
+Flix-Remote/review/native/MAVEN_REPRODUCTION_WORKLIST.json maps all 79 measured
+binary files to those source archive hashes and their original POM evidence.
+These are source collection inputs; exact VCS/build provenance, complete
+transitive license approval and matching binary reproduction remain unverified.

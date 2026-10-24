@@ -6,6 +6,7 @@ import { request } from './api.ts';
 import { VERSION, BUILD_ID } from './build-info.ts';
 import { AccessGate } from './access.ts';
 import { diagnosticSnapshot, diagnosticText } from './diagnostics.ts';
+import { recentDiagnostics, DIAGNOSTIC_RETENTION_MS } from './diagnostic-retention.ts';
 export interface AccountSession { url: string; sessionToken: string; account: { id: string; email: string } }
 interface Vault { saveSession(input: { value: string }): Promise<void>; readSession(): Promise<{ value?: string }>; clearSession(): Promise<void> }
 const vault = registerPlugin<Vault>('HomeDiscovery');
@@ -19,7 +20,7 @@ export let reportId = '', sharing = false, supportMessage = '', actions: Support
 export let messages: { role: 'user' | 'support'; text: string; at: number }[] = [];
 // Memory-only: reopening the app never restores control permission.
 export let control: ControlGrant | undefined;
-let installationId = '', problem = '';
+let installationId = '', problem = '', problemAt = 0;
 export const accessGate = new AccessGate(async () => {
   if (!account) throw new Error('سجّل دخول حساب FLIX لاستخدام الريموت.');
   const session = account;
@@ -31,10 +32,20 @@ let syncQueue: Promise<void> = Promise.resolve();
 let events: DiagnosticEvent[] = [], resolved: string[] = [], pendingResults: Result[] = [];
 const clean = (v: string) => diagnosticText(v, 300);
 export function record(stage: string, outcome: string, message: string, deviceId = '') { events.push({ at: Date.now(), stage, outcome, message: clean(message), deviceId }); events = events.slice(-80); void persist(); }
-async function persist() { await Preferences.set({ key: 'home-remote-diagnostics', value: JSON.stringify({ installationId, reportId, problem, sharing, events, resolved, pendingResults }) }); }
+async function persist() {
+  events = recentDiagnostics(events).slice(-80);
+  pendingResults = recentDiagnostics(pendingResults).slice(-100);
+  if (!problemAt || Date.now() - problemAt >= DIAGNOSTIC_RETENTION_MS) { problem = ''; problemAt = 0; }
+  await Preferences.set({ key: 'home-remote-diagnostics', value: JSON.stringify({ installationId, reportId, problem, problemAt, sharing, events, resolved, pendingResults }) });
+}
+export async function clearLocalDiagnostics() {
+  await stopSharing();
+  events = []; pendingResults = []; resolved = []; problem = ''; problemAt = 0; reportId = ''; messages = [];
+  await persist();
+}
 export function accountUrl(value: string) { const url = new URL(value); if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/' || url.search || url.hash) throw new Error('خدمة حساب FLIX يجب أن تستخدم HTTPS.'); return url.origin; }
 export async function initSupport() {
-  try { const { value } = await Preferences.get({ key: 'home-remote-diagnostics' }); if (value) { const saved = JSON.parse(value); ({ installationId = '', reportId = '', problem = '', events = [], resolved = [], pendingResults = [] } = saved); } } catch { /* local recovery */ }
+  try { const { value } = await Preferences.get({ key: 'home-remote-diagnostics' }); if (value) { const saved = JSON.parse(value); ({ installationId = '', reportId = '', problem = '', problemAt = 0, events = [], resolved = [], pendingResults = [] } = saved); } } catch { /* local recovery */ }
   sharing = false; control = undefined; installationId ||= crypto.randomUUID();
   try { const value = Capacitor.isNativePlatform() ? (await vault.readSession())?.value : sessionStorage.getItem('home-remote-account'); if (value) { account = JSON.parse(value); account!.url = accountUrl(account!.url); await verifyAccount(); } } catch { account = undefined; }
   accessGate.reset();
@@ -116,7 +127,7 @@ export async function pollSupport() {
 }
 export async function syncSupport(data: unknown, start?: { problem: string }) {
   if (!account || (!sharing && !start)) return;
-  if (start) { problem = start.problem.slice(0, 1200); sharing = true; await persist(); }
+  if (start) { problem = start.problem.slice(0, 1200); problemAt = Date.now(); sharing = true; await persist(); }
   const task = syncQueue.catch(() => undefined).then(async () => {
     if (!account || !sharing) return;
     try {

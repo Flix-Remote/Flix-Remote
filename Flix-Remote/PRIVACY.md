@@ -15,7 +15,7 @@ customer's records were accessed for this review.
 | Compatible UI updates, `flix-admin-tan.vercel.app` | Foreground HTTPS manifest checks, then versioned HTML/JS/assets; server receives network metadata such as IP. | Cached bytes are checked against SHA-256, length and bridge version. Hashes detect mismatch with the manifest, not independent publisher authenticity. Downloaded code executes in the app web context. The same-origin iframe is not an isolation guarantee. |
 | Media search/catalog and artwork | Search text/catalog requests go to `flix-s-neon.vercel.app`. The original page also links S (`flix-s-phi.vercel.app`), F (`flix-s-neon.vercel.app`) and IPTV (`flix-iptv-snowy.vercel.app`). Artwork may come from `image.tmdb.org`. | These hosts receive query/path and network metadata. Their retention is outside this client's verified scope. The source MIT license grants no artwork/media rights. |
 | Package library and downloads | Authenticated catalog queries; user-selected HTTPS URLs supplied by the catalog, potentially external hosts. | Byte length/hash verified. Other applications have separate licenses and privacy terms. iOS/Android/LG/Samsung packages are not interchangeable. |
-| Voice control | Microphone/speech permission for requested voice input. Apple Speech or Android speech provider may process audio; on-device-only recognition is not enforced. | The app does not intentionally send microphone audio to FLIX support. OS/provider terms and device settings apply. |
+| Voice control | Microphone/speech permission only for requested voice input. Both native hosts require on-device recognition and refuse voice input when unavailable locally; use typing instead. Android requires API 31+ and a local recognition service/language. It never falls back to a generic speech activity/provider. | This native client does not send microphone audio to FLIX support or a cloud speech fallback. The browser's own speech implementation is governed separately by the browser/provider. |
 
 ## Local storage and deletion limits
 
@@ -23,7 +23,7 @@ iOS sessions and TV/ADB secrets use Keychain with `WhenUnlockedThisDeviceOnly`.
 Android uses AndroidKeyStore AES-GCM and private preferences. Other state uses
 Capacitor Preferences/app files; browser sessions use sessionStorage. Error events
 are limited to 80, resolved action IDs to 200 and pending results to 100. These are
-count limits, not timed deletion. Local package files persist until removed.
+count limits. Error events, pending diagnostic results and problem text older than seven days are cleared when the app opens or diagnostics are saved; this is not an OS background deletion guarantee. The account panel offers a local-diagnostics clear button that stops sharing, clears local diagnostic history and leaves server copies untouched. Local package files persist until removed.
 
 Signing out clears the saved account session/client support state and requests
 server logout. It does not erase server inventory/reports/conversations/results.
@@ -47,6 +47,13 @@ executable updates, retention/erasure and processor disclosures remain publicati
 blockers. Store data labels and required-reason API declarations must match the
 approved binary/services. Tracking=false in `PrivacyInfo.xcprivacy` alone does not
 prove that no data is collected.
+
+The candidate's main-app privacy manifest declares account/profile name, email,
+user and installation identifiers, product interaction, search history, support
+content, other user content and diagnostics as account-linked data used for app
+functionality. These declarations cover the reviewed client paths and are checked
+against the packed IPA. They do not certify processor retention or replace the
+store questionnaire and service review.
 
 Evidence: `review/PRIVACY_REVIEW.md` and `review/RELEASE_REVIEW.md`. This candidate
 disclosure does not claim the blocked production/privacy work has been completed.

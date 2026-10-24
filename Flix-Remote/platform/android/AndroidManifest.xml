@@ -20,6 +20,9 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
+    <queries>
+        <intent><action android:name="android.speech.RecognitionService" /></intent>
+    </queries>
     <application>
         <!-- Example: add SDK metadata here (use the SDK's documented name and value).
         <meta-data android:name="com.example.sdk.OPTION" android:value="true" />
