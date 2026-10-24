@@ -43,6 +43,11 @@ IPHONEOS_DEPLOYMENT_TARGET = 17.0
 // 1 = iPhone, 2 = iPad. Drop the 2 for an iPhone-only app.
 TARGETED_DEVICE_FAMILY = 1,2
 
+// Capacitor and Cordova are dynamic SwiftPM products embedded under Frameworks/.
+// The Day host has no dynamic dependencies by default, so set the app-relative
+// runtime search path for both simulator and packaged device builds explicitly.
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
+
 // ===========================================================================
 // More examples
 // ===========================================================================

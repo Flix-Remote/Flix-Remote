@@ -16,6 +16,9 @@ import java.util.List;
 public final class DayRemoteView extends FrameLayout {
     private final FragmentActivity owner;
     private RemoteFragment remote;
+    private boolean pageReady;
+    // Day's native-state reader must see the rendered page, not just an empty container.
+    @Override public boolean isEnabled() { return super.isEnabled() && pageReady; }
     public static View create() { return new DayRemoteView((FragmentActivity) DayBridge.ctx); }
     private DayRemoteView(FragmentActivity owner) {
         super(owner); this.owner = owner;
@@ -62,6 +65,19 @@ public final class DayRemoteView extends FrameLayout {
             )).create();
             newIntent = intent -> { if (bridge != null) bridge.onNewIntent(intent); };
             requireActivity().addOnNewIntentListener(newIntent);
+            checkPage(0);
+        }
+        private void checkPage(int attempt) {
+            if (bridge == null || !isAdded()) return;
+            android.webkit.WebView web = bridge.getWebView();
+            web.evaluateJavascript("(() => { const f = document.getElementById('original-remote'); const d = f?.contentDocument; const p = d?.getElementById('tvPick'); return !!(p && p.getBoundingClientRect().width > 100 && innerWidth > 200 && innerHeight > 200); })()", result -> {
+                if (bridge == null || !isAdded()) return;
+                DayRemoteView host = (DayRemoteView) getView().getParent();
+                host.pageReady = "true".equals(result) && web.getWidth() > 200 && web.getHeight() > 200;
+                if (host.pageReady) android.util.Log.i("day-android", "FLIX original remote DOM and native frame ready");
+                else if (attempt < 120) web.postDelayed(() -> checkPage(attempt + 1), 250);
+                else android.util.Log.e("day-android", "FLIX original remote did not render in its native frame");
+            });
         }
         @Override public void onStart() { super.onStart(); if (bridge != null) bridge.onStart(); }
         @Override public void onResume() { super.onResume(); if (bridge != null) bridge.onResume(); }
