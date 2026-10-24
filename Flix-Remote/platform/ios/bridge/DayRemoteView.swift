@@ -51,7 +51,9 @@ private final class DayRemoteView: UIView {
     }
 }
 @_cdecl("flix_day_remote_create")
-func flixDayRemoteCreate(_ path: UnsafePointer<CChar>) -> UnsafeMutableRawPointer {
+// Rust calls this C entry point outside the Swift module. Keep it exported in
+// optimized SwiftPM builds as well as the simulator's unoptimized build.
+public func flixDayRemoteCreate(_ path: UnsafePointer<CChar>) -> UnsafeMutableRawPointer {
     dispatchPrecondition(condition: .onQueue(.main))
     let view = DayRemoteView(assets: URL(fileURLWithPath: String(cString: path), isDirectory: true))
     return Unmanaged.passRetained(view).toOpaque()
