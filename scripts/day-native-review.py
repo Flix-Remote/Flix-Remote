@@ -34,7 +34,10 @@ def main():
                     'source_url': get('m:scm/m:url'), 'source_tag': get('m:scm/m:tag'),
                     'reproduction_verified': False})
     elif target == 'ios-uikit':
-        locks = sorted((PROJECT / 'platform/ios').rglob('Package.resolved'))
+        # Day creates its default Xcode host under build/day/xcode/ios; a
+        # checked-in platform/ios host is only an explicit customization.
+        locks = sorted({p for base in [PROJECT / 'platform/ios', PROJECT / 'build/day/xcode/ios']
+                        for p in base.rglob('Package.resolved')})
         if not locks: raise RuntimeError('Missing resolved SwiftPM graph')
         result['swiftpm'] = [{'path': p.relative_to(PROJECT).as_posix(), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
                               'resolved': json.loads(p.read_text())} for p in locks]
