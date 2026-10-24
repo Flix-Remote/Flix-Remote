@@ -8,7 +8,11 @@ const root=execFileSync(go,['env','GOROOT'],{encoding:'utf8'}).trim();
 copyFileSync(resolve(root,'lib/wasm/wasm_exec.js'),'public/ssh/wasm_exec.js');
 
 mkdirSync('public/licenses',{recursive:true});
-copyFileSync(resolve(root,'LICENSE'),'public/licenses/Go.txt');
+// Homebrew may relocate license files out of libexec (GOROOT).
+// Require the installed toolchain's license; never silently omit attribution.
+const goLicense=[resolve(root,'LICENSE'),resolve(root,'../LICENSE'),resolve(root,'../share/doc/go/LICENSE')].find(existsSync);
+if(!goLicense)throw new Error(`Go toolchain license not found beside ${root}`);
+copyFileSync(goLicense,'public/licenses/Go.txt');
 const modules=execFileSync(go,['env','GOMODCACHE'],{cwd:'sshcore',encoding:'utf8'}).trim();
 const license='public/licenses/x-crypto.txt';
 if(existsSync(license))chmodSync(license,0o666);

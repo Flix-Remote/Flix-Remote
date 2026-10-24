@@ -25,14 +25,15 @@ export async function mountOriginalRemote(host:PageHost){
  };
  window.flixRemoteSpeech=()=>registerPlugin<{recognizeSpeech():Promise<{text:string}>}>('HomeDiscovery').recognizeSpeech();
  const speechShim=Capacitor.isNativePlatform()?`window.SpeechRecognition=class{start(){parent.flixRemoteSpeech().then(r=>{const row=[{transcript:r.text}];row.isFinal=true;this.onresult?.({resultIndex:0,results:[row]});}).catch(()=>this.onerror?.({error:'not-allowed'})).finally(()=>this.onend?.());}};`:'';
- const shim=`<script>window.flixNativePage=true;window.fetch=(route,init)=>parent.flixRemotePageRequest(String(route),init);${speechShim}</script>`;
+ const shim=`<script>window.flixNativePage=true;window.flixHouseholdProtocol=1;window.fetch=(route,init)=>parent.flixRemotePageRequest(String(route),init);${speechShim}</script>`;
  const additions=`<style>
  .remote-actions{display:flex;align-items:center;gap:6px}.remote-actions button{font:inherit;padding:6px 8px;min-height:34px;white-space:nowrap;flex:1}.remote-actions button:first-child{flex:1.7}.installer summary{padding:4px 6px}.phone-notice{position:fixed;inset:auto 8px 8px;background:#18382b;color:#fff;padding:12px;border-radius:12px;z-index:9999;font-size:13px;pointer-events:none}.phone-notice[hidden]{display:none}#nativePair{width:100%;margin-top:8px}
  </style><script>
  const phonePanel=(panel,host)=>fetch('/api/native-panel',{method:'POST',body:JSON.stringify({panel,host:host||window.flixRemote?.host()||''})});
+ window.flixOpenAccountSupport=()=>phonePanel('support');
  const oldLink=document.querySelector('a[href="/home-remote"]');if(oldLink)oldLink.remove();
  const install=document.querySelector('.installer'),summary=install?.querySelector('summary');
- if(summary){summary.textContent='';summary.classList.add('remote-actions');for(const [panel,label] of [['library','تثبيت التطبيقات'],['support','حساب FLIX'],['problem','فيه مشكلة']]){const b=document.createElement('button');b.type='button';b.textContent=label;if(panel==='problem')b.title='مشاركة تشخيص هذا الجوال والشاشات فقط؛ يمكنك إيقاف المشاركة من حساب FLIX';b.onclick=e=>{e.preventDefault();e.stopPropagation();phonePanel(panel)};summary.append(b);}}
+ if(summary){summary.textContent='';summary.classList.add('remote-actions');for(const [panel,label] of [['library','تثبيت التطبيقات'],['support','حساب FLIX']]){const b=document.createElement('button');b.type='button';b.textContent=label;if(panel==='problem')b.title='مشاركة تشخيص هذا الجوال والشاشات فقط؛ يمكنك إيقاف المشاركة من حساب FLIX';b.onclick=e=>{e.preventDefault();e.stopPropagation();phonePanel(panel)};summary.append(b);}}
  install?.addEventListener('toggle',()=>{if(install.open){install.open=false;phonePanel('library');}});
  const pair=document.createElement('button');pair.id='nativePair';pair.textContent='اقتران بالتلفزيون';pair.onclick=()=>phonePanel('pair');document.getElementById('closeSheet')?.before(pair);
  document.getElementById('useIp').addEventListener('click',()=>phonePanel('manual',document.getElementById('ipInput').value.trim()));

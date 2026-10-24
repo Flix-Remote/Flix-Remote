@@ -1,0 +1,32 @@
+name: Day migration candidate
+on:
+  push:
+    branches: [codex/day-appfair]
+  workflow_dispatch:
+concurrency:
+  group: day-candidate-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  app:
+    uses: daybrite/actions/.github/workflows/dayapp.yml@v1
+    with:
+      project-path: Flix-Remote
+      day-version: v0.6.0
+      targets: ios-uikit android-mdc web-dom
+      preflight-checks: fmt check test clippy
+      scripts: auto
+      locales: ar
+      themes: dark
+      ios-profiles: iPhone
+      android-profiles: medium_phone
+      release-assets: false
+      deploy-web: false
+      update-day-deps: false
+      target-packages: |
+        ios-uikit: go
+      target-setup: |
+        ios-uikit, android-mdc, web-dom: npm ci && npm run build && npm test

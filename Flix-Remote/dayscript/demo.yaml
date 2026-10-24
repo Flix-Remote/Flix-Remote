@@ -1,0 +1,5 @@
+# CI/simulator only: sends no discovery, pairing or control commands.
+flow:
+  - wait_for: { id: flix_remote }
+  - assert_visible: { id: flix_remote }
+  - screenshot: remote

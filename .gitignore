@@ -1,4 +1,5 @@
 node_modules/
+/src/build-info.ts
 .research/
 public/ssh/sshcore.wasm
 .toolchain/

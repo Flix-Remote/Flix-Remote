@@ -1,0 +1,5 @@
+# Source-review preview only. Replace with the approved organization URL before catalog submission.
+host = "https://ahmedzx054.github.io/flix-home-remote"
+locales = ["en", "ar"]
+about = "README.md"
+show-store-badges = false

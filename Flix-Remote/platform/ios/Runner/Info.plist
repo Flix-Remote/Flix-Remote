@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>$(DAY_APP_TITLE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(DAY_URL_SCHEME)</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>DayWindowMinHeight</key>
+	<string>$(DAY_WINDOW_MIN_HEIGHT)</string>
+	<key>DayWindowMinWidth</key>
+	<string>$(DAY_WINDOW_MIN_WIDTH)</string>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>يكتشف ريموت البيت تلفزيوناتك ويتصل بها مباشرة من iPhone على شبكة Wi-Fi للتحكم ونقل التطبيقات التي تختارها.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_androidtvremote2._tcp</string>
+		<string>_googlecast._tcp</string>
+		<string>_adb._tcp</string>
+		<string>_adb-tls-connect._tcp</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>يحوّل زر صوتي كلامك إلى أمر ترسله من الهاتف إلى التلفزيون.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>يستخدم الميكروفون عند ضغط زر صوتي للإملاء والتحكم بالتلفزيون.</string>
+</dict>
+</plist>

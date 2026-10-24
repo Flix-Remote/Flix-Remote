@@ -1,0 +1,57 @@
+# Day migration and App Fair review
+
+Status: source candidate, not a published or physically qualified mobile release.
+
+Public review: https://github.com/Ahmedzx054/flix-home-remote/pull/1 (draft).
+App Fair introduction submitted: https://github.com/orgs/appfair/discussions/7 .
+This is an introduction and architecture/privacy review request, not catalog acceptance.
+
+## Shared interface and native bridge
+
+`Flix-Remote/` is a real Day 0.6.0 project generated with the official CLI. One custom
+Day Piece hosts the original remote page. `npm run build` stages the same `dist/`
+into Capacitor and the Day resource bundle. The native LAN, ADB pairing/installation,
+secure storage and speech sources remain the original three plugins. UIKit embeds
+the existing bridge controller; Android adapts Capacitor to Day's FragmentActivity
+inside generated dependency copies, with exact before/after hashes.
+
+The original `src/remote-page/updates.ts` channel is retained. Compatible remote-page
+changes are fetched through the existing trusted HTTPS bridge-1 manifest, verified
+by length/hash/path/bridge checks and cached with fallback. Native code or permission
+changes require a new signed mobile binary. A browser target cannot supply native
+socket/ADB functions merely by displaying the same page.
+
+## Qualification
+
+Logs under `evidence/day-*` distinguish Rust/mock checks, web build, original shared
+page fixture tests, CI/native builds and physical-device acceptance. A staged hash
+receipt is evidence of exact input bytes only. Do not call it a mobile build or a
+successful television interaction. No owner phone or household TV is launched by
+the verification workflow. No production service is restarted or deployed.
+
+The full workspace has 55 isolated checks. The standalone phone repository has 50:
+two private browser-server test files (five checks) stay in the full workspace,
+because they exercise server sources outside this public client repository.
+They are not replaced by fixtures or counted as passing in the standalone suite.
+
+## App Fair gates
+
+The public source-review branch is `codex/day-appfair` in `Ahmedzx054/flix-home-remote`.
+It is not the required final organization/repository pair. A matching public GitHub
+organization and repository and the App Fair Publisher installation remain necessary.
+The `appfair` flavor's application ID is a proposal and must be confirmed before release.
+
+App Fair must explicitly review this hybrid Day/custom native Piece and the retained
+cloud JavaScript updates, opt-in support/diagnostics, FLIX accounts and app package library.
+The remote must remain free, without ads or paid feature unlocks. Its source license
+does not license third-party video content or authorize distributing other apps.
+The full dependency/asset license inventory and reproducible Maven source builds remain
+release gates. A privacy draft is supplied, not a completed retention/security audit.
+
+CI pre-release packages, successful mobile/web builds and screenshot walkthroughs are
+required before a catalog PR. App Fair's review and Apple's store review are separate.
+No paid Apple account or payment is initiated by this work. No installation URL is
+claimed until an actual approved distribution channel exists.
+
+Sources: https://appfair.org/docs/inclusion-criteria/ and
+https://appfair.org/docs/getting-started/ .

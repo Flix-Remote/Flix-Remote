@@ -1,0 +1,20 @@
+# Accurate draft listing; publication remains blocked pending native and policy review.
+[storefront.submission-info]
+contact-email = "pro_1415@outlook.com"
+review-notes = "Day migration candidate. Requires compatible LAN TV and on-TV consent. Web target lacks native bridge. No paid remote feature unlocks. Optional FLIX account/diagnostics, package distribution and cloud JS updates require App Fair review; do not publish yet."
+[storefront.metadata]
+name = "FLIX Remote"
+subtitle = "Direct local TV control"
+short = "One-page remote for compatible televisions on your local Wi-Fi."
+description = "Control compatible televisions from one page: devices, applications, remote buttons, supported settings, voice, and permitted package installation. Phones connect directly over the local network. Capabilities depend on the television OS, its permissions and package format. This experimental Day release retains the original FLIX interface and compatible cloud UI updates. Native bridge changes require a new app build."
+keywords = ["remote", "television", "wifi", "local"]
+release-notes = "Experimental Day host for the original FLIX remote. Preserves the shared page and native plugin source. Native builds and App Fair/store acceptance remain to be verified."
+privacy-url = "https://github.com/Ahmedzx054/flix-home-remote/blob/codex/day-appfair/Flix-Remote/PRIVACY.md"
+support-url = "https://github.com/Ahmedzx054/flix-home-remote/issues"
+[storefront.metadata.ar]
+name = "ريموت فلكس"
+subtitle = "التحكم المحلي بالتلفزيون"
+short = "ريموت بصفحة واحدة للتلفزيونات المتوافقة على شبكة واي فاي المنزل."
+description = "تحكم بالتلفزيونات المتوافقة من صفحة واحدة تضم الأجهزة والتطبيقات والأزرار والإعدادات المدعومة والصوت وتثبيت الحزم المسموح بها. يتصل الجوال بالتلفزيون مباشرة على الشبكة المحلية. تختلف الوظائف بحسب نظام التلفزيون وأذوناته وصيغة الحزمة. نسخة Day تجريبية تحافظ على واجهة فلكس الأصلية والتحديثات السحابية المتوافقة؛ تعديل الجسر الأصلي يحتاج نسخة تطبيق جديدة."
+keywords = ["ريموت", "تلفزيون", "واي فاي"]
+release-notes = "نسخة Day تجريبية للريموت الأصلي. بناء النسخ الأصلية وقبول App Fair والمتجر لم يتحققا بعد."

@@ -8,4 +8,5 @@ Conscrypt 2.5.3: Apache-2.0. https://github.com/google/conscrypt/tree/2.5.3
 Bouncy Castle 1.81: MIT-style license, https://www.bouncycastle.org/licence.html
 ADBCore iOS revision 22902f6231c413f2d90accee68f0e59f1c9ea360: MIT, https://github.com/h33h/iadb-ios
 Node dependency license texts: licenses/node-dependencies.txt
-License copies are bundled under licenses/. No upstream library was modified.
+License copies are bundled under licenses/.
+The Day Android candidate adapts five generated Capacitor source files from AppCompatActivity to FragmentActivity. Original npm sources are unchanged; scripts/stage-day.mjs records exact before/after hashes in build/bridge/stage-receipt.json. Other upstream sources are used without modification.

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta name="flix-remote-revision" content="e66dfd7bad836431261b41018a94fdeda4ad7495cbd1ab67c10a72a82e9d2942">
+<meta name="flix-remote-revision" content="d6a95a640b716912e324a9f601d4c25a880a7e8242222a3e26771602ea7838b9">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#07070b">
@@ -739,9 +739,10 @@ header { gap: 8px; }
 .btscan.on::after { content: ''; width: 8px; height: 8px; margin-inline-start: 8px; border-radius: 50%; background: hsl(200 100% 70%); animation: btping 1s ease-in-out infinite; }
 @keyframes btping { 50% { opacity: 0.2; transform: scale(0.6); } }
  .remote{gap:5px;padding-block:8px}.title{display:flex;align-items:center;gap:6px}.remote>.deck{flex:1.8 1 0;height:auto;min-height:100px}.remote>.trackpad{flex:1 1 0;min-height:48px}.top button,.navrow button,.icons button{height:clamp(36px,5vh,44px)}.tools .tool{height:44px}.inputs button,.quick button{height:36px;line-height:36px}
- @media(orientation:landscape) and (max-height:500px){.remote{max-width:850px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:34px minmax(48px,1fr) 32px 32px 40px 32px 42px;gap:4px;padding:6px}.remote>header{grid-column:1;grid-row:1}.remote>.top{grid-column:2;grid-row:1}.remote>.deck{grid-column:1;grid-row:2 / span 4;min-height:0;height:100%}.remote>.navrow{grid-column:2;grid-row:3}.remote>.trackpad{grid-column:2;grid-row:2;min-height:0}.remote>.icons{grid-column:2;grid-row:4}.remote>.tools{grid-column:2;grid-row:5}.remote>.inputs{grid-column:1;grid-row:6}.remote>.quick{grid-column:2;grid-row:6}.remote>.installer{grid-column:1 / -1;grid-row:7}.remote>.sep{display:none}.top button,.navrow button,.icons button,.inputs button,.quick button{height:32px;line-height:32px}.tools .tool{height:40px}.tvpick{min-height:32px}.edit{width:30px;height:30px}.title .brand{font-size:11px}}
+ @media(orientation:landscape) and (max-height:500px){.remote{max-width:850px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:34px minmax(48px,1fr) 32px 32px 40px 32px 32px 42px;gap:4px;padding:6px}.remote>header{grid-column:1;grid-row:1}.remote>.top{grid-column:2;grid-row:1}.remote>.deck{grid-column:1;grid-row:2 / span 4;min-height:0;height:100%}.remote>.navrow{grid-column:2;grid-row:3}.remote>.trackpad{grid-column:2;grid-row:2;min-height:0}.remote>.icons{grid-column:2;grid-row:4}.remote>.tools{grid-column:2;grid-row:5}.remote>.inputs{grid-column:1 / -1;grid-row:6}.remote>.quick{grid-column:1 / -1;grid-row:7}.remote>.installer{grid-column:1 / -1;grid-row:8}.remote>.sep{display:none}.top button,.navrow button,.icons button,.inputs button,.quick button{height:32px;line-height:32px}.tools .tool{height:40px}.tvpick{min-height:32px}.edit{width:30px;height:30px}.title .brand{font-size:11px}}
 
 .quick .tv-quick-app img{border-radius:5px;object-fit:contain;flex-shrink:0}.quick .tv-quick-app span{white-space:nowrap}.quick>.empty{min-width:160px;align-self:center;font-size:11px;padding:0 6px}
+.inputs>.empty{font-size:11px;color:var(--muted);align-self:center;white-space:nowrap}.package-dialog{width:min(420px,92vw);max-height:85vh;overflow:auto;background:#17171f;color:#fff;border:1px solid #555;border-radius:18px;padding:18px}.package-dialog label{display:block;margin-block:10px}.package-dialog input{display:block;width:100%;min-height:40px;font:inherit}.package-dialog button{padding:8px;margin:4px}.installer summary{display:flex;align-items:center;justify-content:space-around;gap:8px}
 </style>
 </head>
 <body>
@@ -824,10 +825,10 @@ header { gap: 8px; }
   <div class="sep"></div>
 
   
-  <div class="inputs" id="inputs" data-block="inputs"></div>
+  <div class="inputs" id="inputs" data-block="inputs" aria-label="الأجهزة المتصلة بالتلفزيون"></div>
 
   
-  <div class="quick" id="quickApps" data-block="apps"></div>
+  <div class="quick" id="quickApps" data-block="apps" aria-label="تطبيقات التلفزيون"></div>
 
   <div class="heard" id="heard"></div>
 
@@ -844,7 +845,7 @@ header { gap: 8px; }
 
   
   <details class="installer more">
-    <summary>تثبيت التطبيقات · النسخ · معلومات</summary>
+    <summary><span>تثبيت التطبيقات</span></summary>
     <div class="installBody" id="installBody">
       <div class="empty">اضغط لعرض الحزم…</div>
     </div>
@@ -903,7 +904,28 @@ header { gap: 8px; }
     toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
   };
   window.flixToast = toast;
-  const tvNames = JSON.parse(localStorage.getItem("flix-remote-tv-names") || "{}");
+  const readPreference = (key) => {
+    try {
+      return localStorage.getItem(key) || "";
+    } catch {
+      return "";
+    }
+  };
+  const savePreference = (key, value) => {
+    try {
+      if (value) localStorage.setItem(key, value);
+      else localStorage.removeItem(key);
+    } catch {
+    }
+  };
+  const tvNames = (() => {
+    try {
+      const stored = JSON.parse(readPreference("flix-remote-tv-names") || "{}");
+      return stored && typeof stored === "object" && !Array.isArray(stored) ? Object.fromEntries(Object.entries(stored).filter(([, name]) => typeof name === "string")) : {};
+    } catch {
+      return {};
+    }
+  })();
   const rememberTvName = (address, name) => {
     if (!address || !name) return;
     tvNames[address] = name;
@@ -937,7 +959,7 @@ header { gap: 8px; }
     const label = tvLabel();
     stateText.textContent = connected ? label || "\u0645\u062A\u0635\u0644" : `\u063A\u064A\u0631 \u0645\u062A\u0635\u0644${label ? ` \xB7 ${label}` : ""}`;
   };
-  let host2 = localStorage.getItem("flix-remote-host") || "";
+  let host2 = readPreference("flix-remote-host");
   let paired = [];
   let defaultHost = "";
   const post = async (path, body) => {
@@ -945,7 +967,7 @@ header { gap: 8px; }
       const response = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...host2 ? { host: host2 } : {}, ...body || {} }) });
       const payload = await response.json().catch(() => null);
       if (!response.ok || !payload || payload.ok === false) {
-        setState(false);
+        if (!payload || payload.error !== "app_not_installed") setState(false);
         toast(payload && (payload.message || payload.error) || "\u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0644\u0645 \u064A\u0633\u062A\u062C\u0628");
         return null;
       }
@@ -959,9 +981,11 @@ header { gap: 8px; }
   };
   const tap = (element, run) => {
     let fired = false;
+    let physicalAt = 0;
     const fire = (event) => {
       event.preventDefault();
       if (fired) return;
+      if (event.type !== "click") physicalAt = Date.now();
       fired = true;
       setTimeout(() => {
         fired = false;
@@ -972,6 +996,10 @@ header { gap: 8px; }
     element.addEventListener("touchstart", fire, { passive: false });
     element.addEventListener("mousedown", (event) => {
       if (event.button === 0) fire(event);
+    });
+    element.addEventListener("click", (event) => {
+      if (event.detail !== 0 && Date.now() - physicalAt < 750) return;
+      fire(event);
     });
   };
   window.flixRemote = { post, toast, host: () => host2, tap };
@@ -984,6 +1012,7 @@ header { gap: 8px; }
     let interval = HOLD_START_MS;
     let held = false;
     let inFlight = false;
+    let physicalAt = 0;
     const stop = () => {
       clearTimeout(graceTimer);
       clearTimeout(repeatTimer);
@@ -1007,6 +1036,7 @@ header { gap: 8px; }
     const start = (event) => {
       event.preventDefault();
       if (graceTimer || repeatTimer || held) return;
+      physicalAt = Date.now();
       if (navigator.vibrate) navigator.vibrate(8);
       held = true;
       inFlight = true;
@@ -1024,6 +1054,16 @@ header { gap: 8px; }
     });
     element.addEventListener("mouseup", stop);
     element.addEventListener("mouseleave", stop);
+    element.addEventListener("click", (event) => {
+      if (event.detail !== 0 && Date.now() - physicalAt < 750) return;
+      event.preventDefault();
+      if (navigator.vibrate) navigator.vibrate(8);
+      void run();
+    });
+    window.addEventListener("touchend", stop);
+    window.addEventListener("touchcancel", stop);
+    window.addEventListener("mouseup", stop);
+    window.addEventListener("blur", stop);
   };
   const HOLDABLE = /* @__PURE__ */ new Set(["UP", "DOWN", "LEFT", "RIGHT", "VOLUMEUP", "VOLUMEDOWN", "CHANNELUP", "CHANNELDOWN", "REWIND", "FASTFORWARD"]);
   let cursorIsUp = false;
@@ -1180,6 +1220,7 @@ header { gap: 8px; }
     post("/api/scroll", { dx: 0, dy: Math.max(-6, Math.min(6, Math.round(-event.deltaY / 60))) });
   }, { passive: false });
   window.addEventListener("keydown", (event) => {
+    if ((event.key === "Enter" || event.key === " ") && event.target.closest && event.target.closest('button,a,[role="button"]')) return;
     const map = { ArrowUp: "UP", ArrowDown: "DOWN", ArrowLeft: "LEFT", ArrowRight: "RIGHT", Enter: "ENTER", Backspace: "BACK", Escape: "EXIT", PageUp: "CHANNELUP", PageDown: "CHANNELDOWN" };
     const name = map[event.key];
     if (!name) return;
@@ -1206,12 +1247,14 @@ header { gap: 8px; }
   };
   const useHost = (value) => {
     host2 = String(value || "").trim();
-    if (host2) localStorage.setItem("flix-remote-host", host2);
-    else localStorage.removeItem("flix-remote-host");
+    savePreference("flix-remote-host", host2);
     markPicked();
-    if (lastConnected !== null) setState(lastConnected);
+    lastConnected = null;
+    dot.classList.remove("on", "bad");
+    stateText.textContent = "\u062C\u0627\u0631\u064A \u0627\u0644\u0627\u062A\u0635\u0627\u0644\u2026";
+    nextConnectionAttempt = 0;
     window.dispatchEvent(new CustomEvent("flix-tv-changed"));
-    refresh();
+    void refresh();
   };
   window.flixRemote.useHost = useHost;
   window.flixRemote.useHost = useHost;
@@ -1315,23 +1358,38 @@ header { gap: 8px; }
   });
   setTimeout(scan, 400);
   const inputsBox = document.getElementById("inputs");
+  let inputsGeneration = 0;
   const loadInputs = async () => {
+    const selectedHost2 = host2, generation = ++inputsGeneration;
+    inputsBox.replaceChildren();
     try {
-      const response = await fetch("/api/inputs" + (host2 ? `?host=${encodeURIComponent(host2)}` : ""));
+      const response = await fetch("/api/inputs" + (selectedHost2 ? `?host=${encodeURIComponent(selectedHost2)}` : ""));
       const payload = await response.json();
-      const list = payload.inputs || [];
+      if (generation !== inputsGeneration || selectedHost2 !== host2) return;
+      if (!response.ok || payload.ok === false || !Array.isArray(payload.inputs)) throw Error("\u062A\u0639\u0630\u0631\u062A \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0645\u062F\u0627\u062E\u0644");
+      const list = payload.inputs.filter((input) => input && typeof input.id === "string" && (input.connected !== false || input.active === true));
       inputsBox.innerHTML = "";
       for (const input of list) {
         const button = document.createElement("button");
-        button.className = (input.active ? "live" : "") + (input.connected ? "" : " off");
-        button.innerHTML = `<span>${escape(input.label || input.id)}</span><i>${input.connected ? "\u0645\u0648\u0635\u0648\u0644" : "\u0641\u0627\u0631\u063A"}</i>`;
+        button.className = input.active ? "live" : "";
+        button.dataset.input = input.id;
+        button.setAttribute("aria-pressed", String(!!input.active));
+        button.innerHTML = `<span>${escape(input.label || input.id)}</span><i>${input.active ? "\u0627\u0644\u062D\u0627\u0644\u064A" : input.connected === true ? "\u0645\u0648\u0635\u0648\u0644" : "\u0645\u062F\u062E\u0644"}</i>`;
+        if (typeof input.connected !== "boolean" && !input.active) button.title = "\u062D\u0627\u0644\u0629 \u0627\u062A\u0635\u0627\u0644 \u0647\u0630\u0627 \u0627\u0644\u0645\u062F\u062E\u0644 \u063A\u064A\u0631 \u0645\u062A\u0627\u062D\u0629 \u0641\u064A \u0628\u0631\u0648\u062A\u0648\u0643\u0648\u0644 \u0627\u0644\u0631\u064A\u0645\u0648\u062A \u0627\u0644\u062D\u0627\u0644\u064A";
         button.addEventListener("click", () => post("/api/input", { id: input.id }).then(loadInputs));
         inputsBox.appendChild(button);
       }
+      if (!list.length) inputsBox.innerHTML = '<span class="empty" role="status">\u0644\u0645 \u064A\u064F\u0631\u062C\u0639 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0623\u062C\u0647\u0632\u0629 \u0645\u062A\u0635\u0644\u0629</span>';
     } catch {
+      if (generation === inputsGeneration) inputsBox.innerHTML = '<span class="empty" role="status">\u062A\u0639\u0630\u0631\u062A \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0627\u0644\u0645\u062A\u0635\u0644\u0629</span>';
     }
   };
   setTimeout(loadInputs, 1200);
+  window.addEventListener("flix-tv-changed", loadInputs);
+  window.addEventListener("flix-tv-ready", loadInputs);
+  setInterval(() => {
+    if (!document.hidden && host2) void loadInputs();
+  }, 6e4);
   for (const button of document.querySelectorAll("[data-settings]")) {
     tap(button, () => post("/api/settings", { page: button.dataset.settings }));
   }
@@ -1522,8 +1580,9 @@ header { gap: 8px; }
   setTimeout(loadVersions, 1800);
   const installBody = document.getElementById("installBody");
   const installer = document.querySelector(".installer");
-  let loadedApps = false;
+  let installGeneration = 0;
   const runInstall = async (app, button) => {
+    if (!confirm(`\u062A\u062B\u0628\u064A\u062A ${app === "all" ? "\u0627\u0644\u062D\u0632\u0645 \u0627\u0644\u0645\u062A\u0627\u062D\u0629" : button.closest(".row2")?.querySelector("b")?.textContent || "\u0627\u0644\u062A\u0637\u0628\u064A\u0642"} \u0639\u0644\u0649 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 ${host2}\u061F`)) return;
     const passField = installBody.querySelector(".pass");
     const original = button.textContent;
     button.textContent = "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u062B\u0628\u064A\u062A\u2026";
@@ -1541,10 +1600,18 @@ header { gap: 8px; }
     loadApps();
   };
   const loadApps = async () => {
+    const selectedHost2 = host2, generation = ++installGeneration;
     try {
       const response = await fetch("/api/tv-apps" + (host2 ? `?host=${encodeURIComponent(host2)}` : ""));
       const payload = await response.json();
+      if (generation !== installGeneration || selectedHost2 !== host2) return;
       installBody.innerHTML = "";
+      const add = document.createElement("button");
+      add.type = "button";
+      add.textContent = "\uFF0B \u0625\u0636\u0627\u0641\u0629 \u062A\u0637\u0628\u064A\u0642";
+      add.setAttribute("aria-label", "\u0625\u0636\u0627\u0641\u0629 \u062A\u0637\u0628\u064A\u0642");
+      add.onclick = () => window.dispatchEvent(new Event("flix-add-package"));
+      installBody.append(add);
       if (payload.platform === "roku") {
         const said = document.createElement("div");
         said.className = "empty";
@@ -1566,7 +1633,10 @@ header { gap: 8px; }
         field.placeholder = "\u0631\u0645\u0632 \u0648\u0636\u0639 \u0627\u0644\u0645\u0637\u0648\u0651\u0631 (\u0666 \u062E\u0627\u0646\u0627\u062A)";
         installBody.appendChild(field);
       }
-      for (const app of payload.apps || []) {
+      const ownApps = [{ key: "s", label: "\u0641\u0644\u0643\u0633 \u0627\u0633" }, { key: "f", label: "\u0641\u0644\u0643\u0633 \u0627\u0641" }, { key: "iptv", label: "\u0641\u0644\u0643\u0633 \u0622\u064A \u0628\u064A \u062A\u064A \u0641\u064A" }];
+      const available = payload.apps || [];
+      const listed = [...ownApps.map((app) => available.find((a) => a.key === app.key) || app), ...available.filter((a) => !ownApps.some((o) => o.key === a.key))];
+      for (const app of listed) {
         const row = document.createElement("div");
         row.className = "row2";
         const who = document.createElement("span");
@@ -1582,7 +1652,8 @@ header { gap: 8px; }
       }
       const all = document.createElement("button");
       all.className = "all";
-      all.textContent = "\u062B\u0628\u0651\u062A \u0627\u0644\u062B\u0644\u0627\u062B\u0629";
+      all.textContent = "\u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062D\u0632\u0645 \u0627\u0644\u0645\u062A\u0627\u062D\u0629";
+      all.disabled = !available.some((app) => app.file);
       all.addEventListener("click", () => runInstall("all", all));
       installBody.appendChild(all);
       const note2 = document.createElement("div");
@@ -1594,11 +1665,17 @@ header { gap: 8px; }
     }
   };
   installer.addEventListener("toggle", () => {
-    if (installer.open && !loadedApps) {
-      loadedApps = true;
-      loadApps();
-    }
+    if (installer.open && !window.flixNativePage) void loadApps();
   });
+  window.addEventListener("flix-packages-changed", () => {
+    if (installer.open) void loadApps();
+  });
+  window.addEventListener("flix-tv-changed", () => {
+    if (installer.open) void loadApps();
+  });
+  setInterval(() => {
+    if (!document.hidden && installer.open && !window.flixNativePage && !document.querySelector("dialog[open],input:focus")) void loadApps();
+  }, 6e4);
   const monitorLine = document.getElementById("monitorBtn");
   const monitorCount = document.getElementById("monitorCount");
   const monitorSheet = document.getElementById("monitorSheet");
@@ -1659,38 +1736,125 @@ header { gap: 8px; }
     void pollMonitor();
   }
   let learnedNames = false;
-  const refresh = async () => {
-    try {
-      const response = await fetch("/api/state" + (host2 ? `?host=${encodeURIComponent(host2)}` : ""));
-      const payload = await response.json();
-      paired = payload.paired || [];
-      defaultHost = payload.defaultHost || "";
-      if (!host2 && defaultHost) currentHost.textContent = `\u0627\u0644\u062D\u0627\u0644\u064A: ${defaultHost}`;
-      if (!learnedNames && !tvNames[host2 || defaultHost]) {
-        learnedNames = true;
-        fetch("/api/televisions").then((r) => r.json()).then((list) => {
-          for (const tv of list.televisions || []) rememberTvName(tv.host, tv.name || tv.model || "");
-          if (lastConnected !== null) setState(lastConnected);
-          else stateText.textContent = tvLabel() || "\u062C\u0627\u0647\u0632";
-        }).catch(() => void 0);
-      }
-      if (payload.connected) {
-        setState(true);
-        return;
-      }
-      dot.classList.remove("on", "bad");
-      stateText.textContent = tvLabel() || "\u062C\u0627\u0647\u0632";
-    } catch {
-      setState(false);
-    }
+  let nextConnectionAttempt = 0;
+  const connectionAttempts = /* @__PURE__ */ new Map();
+  const stateReads = /* @__PURE__ */ new Map();
+  const selectedHost = () => host2 || defaultHost;
+  const stateUrl = (address) => "/api/state" + (address ? "?host=" + encodeURIComponent(address) : "");
+  const askState = async (address) => {
+    const response = await fetch(stateUrl(address), { cache: "no-store", signal: AbortSignal.timeout(7e3) });
+    if (!response.ok) throw Error("remote-state-unavailable");
+    return response.json();
   };
-  refresh();
-  setInterval(refresh, 1e4);
+  const showConnecting = () => {
+    lastConnected = null;
+    dot.classList.remove("on", "bad");
+    stateText.textContent = "\u062C\u0627\u0631\u064A \u0627\u0644\u0627\u062A\u0635\u0627\u0644\u2026" + (tvLabel() ? " \xB7 " + tvLabel() : "");
+  };
+  const connectRemembered = (address) => {
+    if (connectionAttempts.has(address)) return connectionAttempts.get(address);
+    const operation = (async () => {
+      const response = await fetch(
+        "/api/inputs?host=" + encodeURIComponent(address),
+        { cache: "no-store", signal: AbortSignal.timeout(35e3) }
+      );
+      const answer = await response.json();
+      if (!response.ok || answer.error || answer.ok === false) throw Error("remote-connect-unavailable");
+      return askState(address);
+    })();
+    connectionAttempts.set(address, operation);
+    operation.finally(() => {
+      if (connectionAttempts.get(address) === operation) connectionAttempts.delete(address);
+    }).catch(() => void 0);
+    return operation;
+  };
+  const refresh = () => {
+    const requestedHost = host2;
+    if (stateReads.has(requestedHost)) return stateReads.get(requestedHost);
+    const operation = (async () => {
+      try {
+        if (navigator.onLine === false) {
+          setState(false);
+          return;
+        }
+        const payload = await askState(requestedHost);
+        if (host2 !== requestedHost) return;
+        paired = Array.isArray(payload.paired) ? payload.paired : [];
+        defaultHost = payload.defaultHost || "";
+        const address = payload.host || selectedHost();
+        if (address && address !== host2 && (!host2 || paired.includes(host2))) {
+          host2 = address;
+          savePreference("flix-remote-host", host2);
+          markPicked();
+        }
+        const active = selectedHost();
+        if (!learnedNames && !tvNames[active]) {
+          learnedNames = true;
+          void fetch("/api/televisions").then((r) => r.json()).then((list) => {
+            for (const tv of list.televisions || []) rememberTvName(tv.host, tv.name || tv.model || "");
+            if (selectedHost() !== active) return;
+            if (lastConnected === true) setState(true);
+          }).catch(() => void 0);
+        }
+        if (payload.connected) {
+          setState(true);
+          return;
+        }
+        if (!active || !paired.includes(active)) {
+          setState(false);
+          stateText.textContent = active ? "\u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u063A\u064A\u0631 \u0645\u0642\u062A\u0631\u0646 \xB7 " + tvLabel() : "\u0627\u062E\u062A\u0631 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0644\u0644\u0627\u062A\u0635\u0627\u0644";
+          return;
+        }
+        if (connectionAttempts.has(active)) {
+          showConnecting();
+          try {
+            const established = await connectionAttempts.get(active);
+            if (selectedHost() === active) setState(Boolean(established.connected));
+          } catch {
+            if (selectedHost() === active) setState(false);
+          }
+          return;
+        }
+        if (document.hidden || Date.now() < nextConnectionAttempt) {
+          setState(false);
+          return;
+        }
+        showConnecting();
+        nextConnectionAttempt = Date.now() + 3e3;
+        try {
+          const established = await connectRemembered(active);
+          if (selectedHost() !== active) return;
+          setState(Boolean(established.connected));
+        } catch {
+          if (selectedHost() === active) setState(false);
+        }
+      } catch {
+        if (host2 === requestedHost) setState(false);
+      }
+    })();
+    stateReads.set(requestedHost, operation);
+    operation.finally(() => {
+      if (stateReads.get(requestedHost) === operation) stateReads.delete(requestedHost);
+    }).catch(() => void 0);
+    return operation;
+  };
+  const recoverConnection = () => {
+    nextConnectionAttempt = 0;
+    void refresh();
+  };
+  window.addEventListener("online", recoverConnection);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) recoverConnection();
+  });
+  void refresh();
+  setInterval(() => {
+    if (!document.hidden) void refresh();
+  }, 3e3);
 })();
 (() => {
   const HOUSE = "https://flix-s-neon.vercel.app";
   const HOUSE_IPTV = "https://flix-iptv-snowy.vercel.app";
-  const CLOUD = { "s": "https://flix-s-neon.vercel.app", "f": "https://flix-s-neon.vercel.app", "iptv": "https://flix-iptv-snowy.vercel.app" };
+  const CLOUD = { "s": "https://flix-s-phi.vercel.app", "f": "https://flix-s-neon.vercel.app", "iptv": "https://flix-iptv-snowy.vercel.app" };
   const houseAlive = { s: null, iptv: null };
   async function baseFor(which) {
     const house = which === "iptv" ? HOUSE_IPTV : HOUSE;
@@ -1824,6 +1988,7 @@ header { gap: 8px; }
     return value.startsWith("http") ? value : IMG + value;
   };
   const ask = async (url, timeout = 45e3) => {
+    if (url.startsWith("/api/continue?") && host) url += "&host=" + encodeURIComponent(host);
     const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(timeout) });
     return response.json();
   };
@@ -1841,12 +2006,12 @@ header { gap: 8px; }
         }
       }
       if (target === "__direct__" || target.startsWith("__direct__@")) {
-        const directHost = target.startsWith("__direct__@") ? target.slice("__direct__@".length) : "";
+        const directHost = target.startsWith("__direct__@") ? target.slice("__direct__@".length) : targets.find((entry) => entry.id === target)?.host || window.flixRemote?.host?.() || "";
         toast(`${play ? "\u064A\u064F\u0634\u063A\u064E\u0651\u0644" : "\u064A\u064F\u0641\u062A\u062D"} \u0639\u0644\u0649 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646: ${label}\u2026`);
         const response2 = await fetch("/api/open-in-app", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ path, app: chosen.id, play, ...directHost ? { host: directHost } : host ? { host } : {} })
+          body: JSON.stringify({ path, app: chosen.id, play, ...directHost ? { host: directHost } : {} })
         });
         const result = await response2.json().catch(() => ({}));
         if (result.ok) {
@@ -2564,8 +2729,26 @@ header { gap: 8px; }
         }
         if (card.done) art.append(el("em", "exContDone", "\u2713"));
         tile.append(art, el("strong", "", card.title || ""), el("small", "", card.label || ""));
-        tile.addEventListener("click", () => {
-          void drive(card.path, { play: true, label: card.title || "" });
+        tile.addEventListener("click", async () => {
+          if (tile.disabled) return;
+          tile.disabled = true;
+          tile.setAttribute("aria-busy", "true");
+          const selectedSite = site;
+          try {
+            const fresh = await ask("/api/continue?app=" + encodeURIComponent(selectedSite) + "&id=" + encodeURIComponent(card.id) + "&kind=" + (card.series ? "tv" : "movie"), 12e3);
+            if (selectedSite !== site || !tile.isConnected) return;
+            const current = fresh?.ok && fresh.cards?.find((entry) => String(entry.id) === String(card.id) && entry.series === card.series);
+            if (!current?.path) {
+              toast("\u062A\u0639\u0630\u0651\u0631 \u0642\u0631\u0627\u0621\u0629 \u0622\u062E\u0631 \u0645\u0648\u0636\u0639 \u2014 \u062D\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649");
+              return;
+            }
+            await drive(current.path, { play: current.play !== false, label: current.title || card.title || "" });
+          } catch {
+            toast("\u062A\u0639\u0630\u0651\u0631 \u0642\u0631\u0627\u0621\u0629 \u0622\u062E\u0631 \u0645\u0648\u0636\u0639 \u2014 \u062D\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649");
+          } finally {
+            tile.disabled = false;
+            tile.removeAttribute("aria-busy");
+          }
         });
         row.append(tile);
       }
@@ -2635,7 +2818,7 @@ header { gap: 8px; }
     choose.addEventListener("change", () => {
       target = choose.value;
       try {
-        localStorage.setItem("flix-explore-target.v2", target);
+        localStorage.setItem("flix-explore-target.v3", target);
       } catch {
       }
       say();
@@ -2658,7 +2841,7 @@ header { gap: 8px; }
         const listed = await ask("/api/tv-targets", 12e3);
         targets = listed.targets || [];
         try {
-          const remembered = localStorage.getItem("flix-explore-target.v2") || "";
+          const remembered = localStorage.getItem("flix-explore-target.v3") || "";
           if (remembered && targets.some((entry) => entry.id === remembered)) target = remembered;
         } catch {
         }
@@ -2670,7 +2853,9 @@ header { gap: 8px; }
           return;
         }
         choose.disabled = false;
-        if (!target || !targets.some((entry) => entry.id === target)) target = targets[0].id;
+        if (!target || !targets.some((entry) => entry.id === target)) {
+          target = (targets.find((entry) => entry.direct && entry.host === window.flixRemote?.host?.()) || targets.find((entry) => entry.direct) || targets[0]).id;
+        }
         for (const entry of targets) {
           const node = el("option", "", entry.name);
           node.value = entry.id;
@@ -2981,18 +3166,13 @@ header { gap: 8px; }
       if (node) remote.insertBefore(node, remote.querySelector(".heard"));
     }
     for (const node of blocks()) applyScale(node);
+    const inputs = document.getElementById("inputs");
+    if (inputs && quick) remote.insertBefore(inputs, quick);
   }
   let tvApps = [], appsHost = "", appsError = "", appsLoading = false, appsGeneration = 0;
   const selectedAppsHost = () => window.flixRemote?.host() || "";
   function renderApps() {
     quick.replaceChildren();
-    const refresh = document.createElement("button");
-    refresh.type = "button";
-    refresh.textContent = appsLoading ? "\u2026" : "\u21BB";
-    refresh.title = "\u062A\u062D\u062F\u064A\u062B \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646";
-    refresh.setAttribute("aria-label", "\u062A\u062D\u062F\u064A\u062B \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646");
-    refresh.onclick = () => void refreshTvApps();
-    quick.append(refresh);
     const order = new Map(state.apps.map((a, i) => [a.id, i]));
     const current = tvApps.slice().sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
     for (const app of current) {
@@ -3034,7 +3214,7 @@ header { gap: 8px; }
       const note2 = document.createElement("span");
       note2.className = "empty";
       note2.setAttribute("role", "status");
-      note2.textContent = appsError || (appsLoading ? "\u062C\u0627\u0631\u064D \u0642\u0631\u0627\u0621\u0629 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646\u2026" : "\u0644\u0645 \u064A\u0631\u062C\u0639 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u062A\u0637\u0628\u064A\u0642\u0627\u062A\u061B \u0627\u0636\u063A\u0637 \u062A\u062D\u062F\u064A\u062B");
+      note2.textContent = appsError || (appsLoading ? "\u062C\u0627\u0631\u064D \u0642\u0631\u0627\u0621\u0629 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646\u2026" : "\u0644\u0645 \u064A\u064F\u0631\u062C\u0639 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u062A\u0637\u0628\u064A\u0642\u0627\u062A\u061B \u062A\u064F\u062D\u062F\u064E\u0651\u062B \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u062A\u0644\u0642\u0627\u0626\u064A\u064B\u0627");
       quick.append(note2);
     }
   }
@@ -3877,7 +4057,7 @@ header { gap: 8px; }
     soundBody.append(open);
   }
   const BT_ICON = { headphones: "\u{1F3A7}", speaker: "\u{1F50A}", screen: "\u{1F4FA}" };
-  const BT_WORKING = { connect: "\u064A\u062A\u0635\u0644\u2026 (\u062D\u062A\u0649 \u0646\u0635\u0641 \u062F\u0642\u064A\u0642\u0629)", disconnect: "\u064A\u0641\u0635\u0644\u2026", remove: "\u064A\u062D\u0630\u0641\u2026" };
+  const BT_WORKING = { connect: "\u064A\u062A\u0635\u0644 \u0648\u064A\u062D\u0648\u0651\u0644 \u0627\u0644\u0635\u0648\u062A\u2026", disconnect: "\u064A\u0641\u0635\u0644\u2026", remove: "\u064A\u062D\u0630\u0641\u2026" };
   const BT_DONE = { connect: "\u0627\u062A\u0635\u0644 \u2713 \u2014 \u0627\u0644\u0635\u0648\u062A \u0639\u0644\u064A\u0647 \u0627\u0644\u0622\u0646", disconnect: "\u0627\u0646\u0641\u0635\u0644 \u2713", remove: "\u062D\u064F\u0630\u0641 \u0645\u0646 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u2713" };
   let btBox = null;
   let btTimer = null;
@@ -3938,7 +4118,7 @@ header { gap: 8px; }
     if (!devices.length) list.append(el("div", "pnote", state.scanning ? "\u0644\u0627 \u0634\u064A\u0621 \u0628\u0639\u062F \u2014 \u0634\u063A\u0651\u0644 \u0627\u0644\u0633\u0645\u0627\u0639\u0629 \u0641\u064A \u0648\u0636\u0639 \u0627\u0644\u0627\u0642\u062A\u0631\u0627\u0646" : "\u0644\u0627 \u0633\u0645\u0627\u0639\u0627\u062A \u0645\u0642\u062A\u0631\u0646\u0629 \u0628\u0647\u0630\u0627 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0628\u0639\u062F"));
     for (const device of devices) {
       const row = el("div", `btrow${device.connected ? " on" : ""}${!device.paired ? " fresh" : ""}`);
-      const status = device.connected ? "\u0645\u062A\u0635\u0644 \u0627\u0644\u0622\u0646 \u2014 \u0627\u0644\u0635\u0648\u062A \u0647\u0646\u0627" : device.paired ? "\u0645\u0642\u062A\u0631\u0646 \u2014 \u0627\u0636\u063A\u0637 \u0627\u062A\u0635\u0627\u0644" : "\u062C\u062F\u064A\u062F \u2014 \u0642\u0631\u064A\u0628 \u0645\u0646\u0643";
+      const status = device.connected ? state.audioRouted ? "\u0645\u062A\u0635\u0644 \u0627\u0644\u0622\u0646 \u2014 \u0627\u0644\u0635\u0648\u062A \u0647\u0646\u0627" : "\u0645\u062A\u0635\u0644 \u2014 \u0627\u0644\u0635\u0648\u062A \u0644\u0645 \u064A\u0646\u062A\u0642\u0644 \u0644\u0644\u0633\u0645\u0627\u0639\u0629" : device.paired ? "\u0645\u0642\u062A\u0631\u0646 \u2014 \u0627\u0636\u063A\u0637 \u0627\u062A\u0635\u0627\u0644" : "\u062C\u062F\u064A\u062F \u2014 \u0642\u0631\u064A\u0628 \u0645\u0646\u0643";
       row.innerHTML = `<span class="bico">${BT_ICON[device.kind] || "\u{1F508}"}</span><span class="bname"><b dir="auto">${escape(device.name)}</b><small>${status}</small></span><span class="bact"></span>`;
       const actions = row.querySelector(".bact");
       const add = (label, className, op) => {
@@ -3947,6 +4127,7 @@ header { gap: 8px; }
         actions.append(button);
       };
       if (device.connected) {
+        if (!state.audioRouted) add("\u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0644\u0644\u0635\u0648\u062A", "go", "connect");
         add("\u0641\u0635\u0644", "", "disconnect");
         add("\u062D\u0630\u0641", "del", "remove");
       } else if (device.paired) {
@@ -3997,9 +4178,9 @@ header { gap: 8px; }
     row.querySelector("small").textContent = BT_WORKING[op];
     const answer = await btPost({ op, address: device.address });
     if (box !== btBox) return;
-    if (!answer || answer.ok === false) {
+    if (!answer || answer.ok === false || op === "connect" && answer.audioRouted !== true) {
       buzz([30, 60, 30]);
-      api().toast(answer && answer.message || "\u0627\u0646\u0642\u0637\u0639 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u062E\u0627\u062F\u0645");
+      api().toast(answer && answer.message || (op === "connect" && answer && answer.ok ? "\u0627\u062A\u0635\u0644\u062A \u0627\u0644\u0633\u0645\u0627\u0639\u0629\u060C \u0644\u0643\u0646 \u0644\u0645 \u064A\u062A\u0623\u0643\u062F \u0627\u0646\u062A\u0642\u0627\u0644 \u0627\u0644\u0635\u0648\u062A \u0625\u0644\u064A\u0647\u0627 \u2014 \u0623\u0639\u062F \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629" : "\u0627\u0646\u0642\u0637\u0639 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u062E\u0627\u062F\u0645"));
       loadBluetooth(box);
       return;
     }
@@ -4055,5 +4236,420 @@ header { gap: 8px; }
   }
 })();
 </script>
+
+<script>(() => {
+  const own = [
+    { name: "\u0641\u0644\u0643\u0633 \u0627\u0633", match: /فلكس\s*(اس|إس)|flix[\s-]*s\b/i },
+    { name: "\u0641\u0644\u0643\u0633 \u0627\u0641", match: /فلكس\s*(اف|إف)|flix[\s-]*f\b/i },
+    { name: "\u0641\u0644\u0643\u0633 \u0622\u064A \u0628\u064A \u062A\u064A \u0641\u064A", match: /فلكس\s*(آي|اي)\s*بي|flix[\s-]*iptv\b/i }
+  ];
+  const ready = () => {
+    const guide = (doc2) => {
+      const box = doc2.createElement("details");
+      box.className = "remote-platform-guide";
+      box.dataset.platformGuide = "1";
+      const summary2 = doc2.createElement("summary");
+      summary2.textContent = "\u0637\u0631\u064A\u0642\u0629 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0648\u0627\u0644\u062A\u062B\u0628\u064A\u062A \u062D\u0633\u0628 \u0646\u0638\u0627\u0645 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646";
+      box.append(summary2);
+      const intro = doc2.createElement("p");
+      intro.textContent = "\u0627\u062E\u062A\u0631 \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0630\u064A \u062A\u0631\u064A\u062F \u0627\u0644\u062A\u062B\u0628\u064A\u062A \u0639\u0644\u064A\u0647: \u0647\u0630\u0627 \u0627\u0644\u062C\u0648\u0627\u0644 \u0623\u0648 \u062C\u0647\u0627\u0632 Android \u0622\u062E\u0631 \u0623\u0648 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0627\u0644\u0645\u062A\u0635\u0644. \u0627\u0644\u0645\u0643\u062A\u0628\u0629 \u062A\u0639\u0631\u0636 \u0627\u0644\u062D\u0632\u0645\u0629 \u0627\u0644\u0645\u0637\u0627\u0628\u0642\u0629 \u0644\u0646\u0638\u0627\u0645 \u0627\u0644\u062C\u0647\u0627\u0632\u061B \u0648\u062C\u0648\u062F \u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0639\u0644\u0649 Wi-Fi \u0646\u0641\u0633\u0647 \u0644\u0627 \u064A\u0645\u0646\u062D \u0635\u0644\u0627\u062D\u064A\u0629 \u0627\u0644\u062A\u062B\u0628\u064A\u062A.";
+      box.append(intro);
+      const local = doc2.createElement("details"), localTitle = doc2.createElement("summary"), localHelp = doc2.createElement("p");
+      local.dataset.localApps = "1";
+      localTitle.textContent = "\u062A\u062B\u0628\u064A\u062A \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062C\u0648\u0627\u0644 \u0623\u0648 \u0627\u0644\u062A\u0627\u0628\u0644\u062A";
+      localHelp.textContent = "\u062A\u0627\u0628\u0644\u062A \u0647\u0648\u0627\u0648\u064A \u0627\u0644\u0630\u064A \u064A\u0642\u0628\u0644 Android \u0648\u062C\u0648\u0627\u0644\u0627\u062A Android: \u0646\u0632\u0651\u0644 APK \u0648\u0627\u0641\u062A\u062D\u0647 \u0645\u0646 \u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A\u060C \u062B\u0645 \u0648\u0627\u0641\u0642 \u0639\u0644\u0649 \u0627\u0644\u062A\u062B\u0628\u064A\u062A. \u0639\u0644\u0649 \u0647\u0648\u0627\u0648\u064A \u0642\u062F \u064A\u0637\u0644\u0628 \u0627\u0644\u0646\u0638\u0627\u0645 \u0627\u0644\u0633\u0645\u0627\u062D \u0644\u0644\u0645\u062A\u0635\u0641\u062D \u0623\u0648 \u0627\u0644\u0645\u0644\u0641\u0627\u062A \u0628\u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0645\u0646 \u0645\u0635\u0627\u062F\u0631 \u062E\u0627\u0631\u062C\u064A\u0629. iPhone \u0648\u0622\u064A\u0628\u0627\u062F \u0623\u0628\u0644: \u0627\u0641\u062A\u062D \u0631\u0627\u0628\u0637 \u062A\u0637\u0628\u064A\u0642\u0627\u062A FLIX \u0623\u062F\u0646\u0627\u0647\u060C \u062B\u0645 Safari \u2190 \u0645\u0634\u0627\u0631\u0643\u0629 \u2190 \u0625\u0636\u0627\u0641\u0629 \u0625\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629. \u0623\u0648 \u0623\u0636\u0641 \u0627\u0644\u0623\u064A\u0642\u0648\u0646\u0627\u062A \u0627\u0644\u062B\u0644\u0627\u062B \u0628\u0645\u0644\u0641 \u0648\u0627\u062D\u062F \u0648\u0648\u0627\u0641\u0642 \u0639\u0644\u064A\u0647 \u0645\u0646 \u0625\u0639\u062F\u0627\u062F\u0627\u062A \u062C\u0647\u0627\u0632\u0643. \u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u062D\u0632\u0645\u0629 \u0644\u0644\u0645\u0643\u062A\u0628\u0629 \u0648\u062D\u062F\u0647\u0627 \u0644\u0627 \u062A\u062B\u0628\u0651\u062A\u0647\u0627.";
+      local.append(localTitle, localHelp);
+      for (const [key, name] of [["s", "FLIX S"], ["f", "FLIX F"], ["iptv", "FLIX IPTV"]]) {
+        const link = doc2.createElement("a");
+        link.href = "https://flix-s-phi.vercel.app/downloads/flix-" + key + ".apk";
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "\u062A\u0646\u0632\u064A\u0644 " + name + " \u0639\u0644\u0649 Android";
+        link.style.cssText = "display:block;margin:8px 0";
+        local.append(link);
+      }
+      const form = doc2.createElement("form"), label = doc2.createElement("label"), url = doc2.createElement("input"), download = doc2.createElement("button"), notice = doc2.createElement("p");
+      label.textContent = "\u0631\u0627\u0628\u0637 APK \u0644\u062A\u0637\u0628\u064A\u0642 \u0622\u062E\u0631";
+      url.type = "url";
+      url.required = true;
+      url.placeholder = "https://example.com/app.apk";
+      url.dir = "ltr";
+      url.name = "apkUrl";
+      label.append(url);
+      download.type = "submit";
+      download.textContent = "\u0641\u062A\u062D \u0631\u0627\u0628\u0637 \u0627\u0644\u062D\u0632\u0645\u0629 \u0644\u0644\u062A\u0646\u0632\u064A\u0644";
+      notice.setAttribute("role", "status");
+      form.append(label, download, notice);
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          const target = new URL(url.value.trim());
+          const octets = target.hostname.split("."), valid = octets.length === 4 && octets.every((n) => /^\d{1,3}$/.test(n) && Number(n) <= 255), lan = valid && (octets[0] === "10" || octets[0] === "192" && octets[1] === "168" || octets[0] === "172" && Number(octets[1]) >= 16 && Number(octets[1]) <= 31);
+          if (target.username || target.password || !(target.protocol === "https:" || target.protocol === "http:" && lan) || !target.pathname.toLowerCase().endsWith(".apk")) throw Error("\u0623\u062F\u062E\u0644 \u0631\u0627\u0628\u0637 HTTPS \u0644\u0645\u0644\u0641 APK\u060C \u0623\u0648 \u0631\u0627\u0628\u0637 HTTP \u0644\u062C\u0647\u0627\u0632 \u0639\u0644\u0649 \u0634\u0628\u0643\u062A\u0643 \u0627\u0644\u0645\u062D\u0644\u064A\u0629.");
+          const link = doc2.createElement("a");
+          link.href = target.href;
+          link.target = "_blank";
+          link.rel = "noopener";
+          local.append(link);
+          link.click();
+          link.remove();
+          notice.textContent = "\u0641\u062A\u062D\u062A \u0631\u0627\u0628\u0637 \u0627\u0644\u062A\u0646\u0632\u064A\u0644\u061B \u0623\u0643\u0645\u0644 \u0627\u0644\u062A\u062B\u0628\u064A\u062A \u0645\u0646 \u0625\u0634\u0639\u0627\u0631 \u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A \u0623\u0648 \u062A\u0637\u0628\u064A\u0642 \u0627\u0644\u0645\u0644\u0641\u0627\u062A. \u0644\u0645 \u064A\u064F\u0624\u0643\u0651\u064E\u062F \u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0628\u0639\u062F.";
+        } catch (error) {
+          notice.textContent = error.message;
+        }
+      };
+      local.append(form);
+      box.append(local);
+      const other = doc2.createElement("details"), otherTitle = doc2.createElement("summary"), otherHelp = doc2.createElement("p");
+      otherTitle.textContent = "\u062C\u0648\u0627\u0644 \u0623\u0648 \u062A\u0627\u0628\u0644\u062A Android \u0622\u062E\u0631 \u0639\u0644\u0649 \u0627\u0644\u0634\u0628\u0643\u0629";
+      otherHelp.textContent = "\u064A\u0634\u0645\u0644 \u062A\u0627\u0628\u0644\u062A \u0647\u0648\u0627\u0648\u064A \u0627\u0644\u0630\u064A \u064A\u0642\u0628\u0644 APK. \u064A\u0639\u0645\u0644 \u0627\u0644\u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u0639\u0646\u062F \u062A\u0648\u0641\u064A\u0631 Wireless debugging \u0641\u064A \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0622\u062E\u0631 \u0648\u0627\u0644\u0627\u0642\u062A\u0631\u0627\u0646 \u0628\u0631\u0645\u0632\u0647 \u0648\u0645\u0646\u0641\u0630\u064A\u0647. \u0627\u0628\u062D\u062B \u0639\u0646 \u0627\u0644\u062C\u0647\u0627\u0632 \u0623\u0648 \u0623\u0636\u0641 \u0639\u0646\u0648\u0627\u0646\u0647 \u0648\u0627\u062E\u062A\u0631 Android\u060C \u062B\u0645 \u0627\u0642\u062A\u0631\u0646 \u0648\u0623\u0636\u0641 APK \u0625\u0644\u0649 \u0645\u0643\u062A\u0628\u062A\u0643 \u0648\u0627\u062E\u062A\u0631 \u062A\u062B\u0628\u064A\u062A \u0639\u0644\u0649 \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0645\u062D\u062F\u062F. \u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0627\u0644\u062A\u064A \u0644\u0627 \u062A\u062A\u064A\u062D ADB \u0627\u0644\u0634\u0628\u0643\u064A: \u0634\u0627\u0631\u0643 \u0631\u0627\u0628\u0637 APK \u0645\u0639 \u0635\u0627\u062D\u0628\u0647\u0627 \u0644\u064A\u062D\u0645\u0651\u0644\u0647 \u0648\u064A\u062B\u0628\u0651\u062A\u0647 \u0639\u0644\u0649 \u062C\u0647\u0627\u0632\u0647. \u0622\u064A\u0628\u0627\u062F \u0623\u0628\u0644 \u064A\u0633\u062A\u062E\u062F\u0645 \u0631\u0627\u0628\u0637 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0648\u064A\u0628\u060C \u0648\u0644\u0627 \u064A\u0633\u062A\u0642\u0628\u0644 APK.";
+      other.append(otherTitle, otherHelp);
+      if (window.flixNativePage) {
+        const add = doc2.createElement("button");
+        add.type = "button";
+        add.textContent = "\u0625\u0636\u0627\u0641\u0629 \u062C\u0647\u0627\u0632 Android \u0628\u0627\u0644\u0639\u0646\u0648\u0627\u0646";
+        add.dataset.addAndroid = "1";
+        add.onclick = () => {
+          pendingAndroid = true;
+          void fetch("/api/native-panel", { method: "POST", body: JSON.stringify({ panel: "manual" }) });
+        };
+        other.append(add);
+      }
+      box.append(other);
+      const systems = [
+        ["LG \xB7 webOS \xB7 IPK", "\u0627\u0644\u062C\u0648\u0627\u0644 \u0648\u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0639\u0644\u0649 \u0627\u0644\u0634\u0628\u0643\u0629 \u0646\u0641\u0633\u0647\u0627. \u0644\u0644\u062A\u062D\u0643\u0645: \u0627\u062E\u062A\u0631 LG \u0648\u0627\u0642\u0628\u0644 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0639\u0644\u0649 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646. \u0644\u0644\u062A\u062B\u0628\u064A\u062A: \u062D\u0633\u0627\u0628 LG Developer \u0648\u062A\u0637\u0628\u064A\u0642 Developer Mode \u0639\u0644\u0649 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646\u060C \u062B\u0645 \u062A\u0641\u0639\u064A\u0644 Key Server \u0648\u0625\u062F\u062E\u0627\u0644 Passphrase \u0641\u064A \u062A\u062C\u0647\u064A\u0632 \u0627\u0644\u0645\u0637\u0648\u0651\u0631 \u0628\u0627\u0644\u0631\u064A\u0645\u0648\u062A. \u062A\u064F\u0646\u0642\u0644 IPK \u0645\u0646 \u0627\u0644\u062C\u0648\u0627\u0644 \u0645\u0628\u0627\u0634\u0631\u0629 \u0628\u0639\u062F \u0627\u0644\u062A\u0623\u0643\u064A\u062F. \u0627\u0646\u062A\u0647\u0627\u0621 \u062C\u0644\u0633\u0629 Developer Mode \u0642\u062F \u064A\u062D\u0630\u0641 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631\u061B \u062C\u062F\u0651\u062F\u0647\u0627 \u0645\u0646 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0642\u0628\u0644 \u0627\u0646\u062A\u0647\u0627\u0626\u0647\u0627."],
+        ["TCL / Sony \xB7 Android \u0623\u0648 Google TV \xB7 APK", "\u0627\u0644\u0646\u0633\u062E\u0629 \u0646\u0641\u0633\u0647\u0627 \u0645\u0646 APK \u062A\u0646\u0627\u0633\u0628 \u0623\u062C\u0647\u0632\u0629 Android \u0627\u0644\u0645\u062A\u0648\u0627\u0641\u0642\u0629\u060C \u0648\u0644\u064A\u0633\u062A \u0645\u0631\u062A\u0628\u0637\u0629 \u0628\u0627\u0633\u0645 \u0627\u0644\u0645\u0627\u0631\u0643\u0629. \u0627\u0642\u062A\u0631\u0646 \u0628\u0631\u0645\u0632 Android TV \u0627\u0644\u0638\u0627\u0647\u0631 \u0644\u0644\u062A\u062D\u0643\u0645. \u0644\u0644\u062A\u062B\u0628\u064A\u062A \u064A\u0644\u0632\u0645 \u0623\u064A\u0636\u064B\u0627 \u062A\u0641\u0639\u064A\u0644 Wireless debugging \u0648\u0627\u0644\u0627\u0642\u062A\u0631\u0627\u0646 \u0628\u0631\u0645\u0632\u0647 \u0648\u0645\u0646\u0641\u0630\u0647 \u0625\u0630\u0627 \u0623\u062A\u0627\u062D\u0647 \u0627\u0644\u0646\u0638\u0627\u0645\u060C \u0623\u0648 ADB \u0627\u0644\u0634\u0628\u0643\u064A \u0627\u0644\u0645\u0635\u0631\u0651\u062D \u0628\u0647. \u0631\u0645\u0632 \u0627\u0644\u062A\u062D\u0643\u0645 \u0648\u062D\u062F\u0647 \u0644\u0627 \u064A\u0645\u0646\u062D \u0635\u0644\u0627\u062D\u064A\u0629 \u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A. \u0627\u062E\u062A\u0631 APK \u0645\u0646 \u0627\u0644\u0645\u0643\u062A\u0628\u0629 \u0623\u0648 \u0623\u0636\u0641 \u0645\u0644\u0641\u0647 \u0645\u0646 \u0627\u0644\u062C\u0648\u0627\u0644. \u0628\u0639\u0636 \u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0627\u0644\u0642\u062F\u064A\u0645\u0629 \u0644\u0627 \u062A\u062A\u064A\u062D \u0627\u0644\u062A\u062B\u0628\u064A\u062A \u0627\u0644\u0634\u0628\u0643\u064A \u0645\u0628\u0627\u0634\u0631\u0629."],
+        ["Samsung \xB7 Tizen \xB7 WGT", "\u0627\u0642\u0628\u0644 \u0637\u0644\u0628 \u0627\u0644\u062A\u062D\u0643\u0645 \u0639\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629. \u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u064A\u062D\u062A\u0627\u062C Developer Mode \u0648\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062C\u0648\u0627\u0644 \u0627\u0644\u0645\u0633\u0645\u0648\u062D \u0648\u062E\u062F\u0645\u0629 SDB\u060C \u0648\u062D\u0632\u0645\u0629 WGT \u0645\u0648\u0642\u0639\u0629 \u0628\u0634\u0647\u0627\u062F\u0629 \u062A\u0633\u0645\u062D \u0628\u0640 DUID \u0644\u0647\u0630\u0627 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646. \u062A\u0648\u0642\u064A\u0639 \u0645\u0637\u0648\u0651\u0631 \u0648\u0627\u062D\u062F \u064A\u0645\u0643\u0646 \u0623\u0646 \u064A\u0634\u0645\u0644 \u0639\u062F\u0629 \u0623\u062C\u0647\u0632\u0629 \u0645\u0633\u062C\u0644\u0629\u061B APK \u0648IPK \u0644\u0627 \u064A\u0639\u0645\u0644\u0627\u0646 \u0639\u0644\u0649 Tizen. \u0646\u0633\u062E FLIX \u0644\u0633\u0627\u0645\u0633\u0648\u0646\u063A \u062A\u0646\u062A\u0638\u0631 \u0634\u0647\u0627\u062F\u0629 Samsung \u0648\u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0627\u0644\u0645\u0633\u062A\u0647\u062F\u0641\u0629\u060C \u0648\u0644\u0627 \u062A\u0638\u0647\u0631 \u0643\u062D\u0632\u0645 \u062C\u0627\u0647\u0632\u0629 \u0642\u0628\u0644 \u062A\u0648\u0642\u064A\u0639\u0647\u0627. \u064A\u0645\u0643\u0646 \u0625\u0636\u0627\u0641\u0629 WGT \u0645\u0648\u0642\u0639\u0629 \u0645\u0646 \u0645\u0643\u062A\u0628\u0629 \u062A\u0637\u0628\u064A\u0642 \u0627\u0644\u062C\u0648\u0627\u0644."],
+        ["TCL \xB7 Roku\u060C \u0648\u0627\u0644\u0623\u0646\u0638\u0645\u0629 \u0627\u0644\u0623\u062E\u0631\u0649", "TCL \u0642\u062F \u064A\u0643\u0648\u0646 Roku \u0648\u0644\u064A\u0633 Android. \u0627\u0633\u062A\u062E\u062F\u0645 \u0645\u062A\u062C\u0631 \u0627\u0644\u0646\u0638\u0627\u0645 \u0644\u0644\u062A\u062B\u0628\u064A\u062A\u061B \u0644\u0627 \u062A\u062D\u0627\u0648\u0644 \u0625\u0631\u0633\u0627\u0644 APK \u0623\u0648 IPK \u0623\u0648 WGT \u0625\u0644\u0649 \u0646\u0638\u0627\u0645 \u0645\u062E\u062A\u0644\u0641. \u062A\u062B\u0628\u064A\u062A \u0623\u064A \u062A\u0637\u0628\u064A\u0642 \u064A\u0639\u062A\u0645\u062F \u0639\u0644\u0649 \u0635\u0644\u0627\u062D\u064A\u0627\u062A \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u0648\u0635\u064A\u063A\u062A\u0647 \u0648\u062A\u0648\u0627\u0641\u0642\u0647\u060C \u0648\u0644\u064A\u0633 \u0645\u062C\u0631\u062F \u0648\u062C\u0648\u062F\u0647 \u0639\u0644\u0649 \u0634\u0628\u0643\u0629 Wi-Fi."]
+      ];
+      for (const [name, text] of systems) {
+        const item = doc2.createElement("details"), title = doc2.createElement("summary"), p = doc2.createElement("p");
+        title.textContent = name;
+        p.textContent = text;
+        item.append(title, p);
+        box.append(item);
+      }
+      const updates = doc2.createElement("p");
+      updates.textContent = "\u0646\u0633\u062E FLIX \u0627\u0644\u0633\u062D\u0627\u0628\u064A\u0629 \u062A\u062C\u0644\u0628 \u062A\u0639\u062F\u064A\u0644\u0627\u062A\u0647\u0627 \u0639\u0646\u062F \u0627\u0644\u0641\u062A\u062D \u0648\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0627\u062A\u0635\u0627\u0644. \u0627\u0644\u0645\u0643\u062A\u0628\u0629 \u062A\u062A\u062D\u0642\u0642 \u0645\u0646 \u0623\u062D\u062F\u062B \u0627\u0644\u062D\u0632\u0645 \u0643\u0644 \u062F\u0642\u064A\u0642\u0629 \u0623\u062B\u0646\u0627\u0621 \u0641\u062A\u062D\u0647\u0627. \u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u062D\u0632\u0645\u0629 \u0623\u0648 \u0627\u0644\u062A\u0648\u0642\u064A\u0639 \u064A\u062D\u062A\u0627\u062C \u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u0646\u0633\u062E\u0629 \u0648\u0645\u0631\u0627\u062C\u0639\u0629 \u062A\u062B\u0628\u064A\u062A\u0647\u0627\u061B \u0644\u0627 \u0646\u062B\u0628\u0651\u062A \u0634\u064A\u0626\u064B\u0627 \u0639\u0644\u0649 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646 \u062A\u0644\u0642\u0627\u0626\u064A\u064B\u0627.";
+      box.append(updates);
+      const family = doc2.createElement("a");
+      family.href = "https://flix-admin-tan.vercel.app/home-remote/apps/";
+      family.target = "_blank";
+      family.rel = "noopener";
+      family.textContent = "\u062A\u062B\u0628\u064A\u062A FLIX S \u0648F \u0648IPTV \u0639\u0644\u0649 \u062C\u0648\u0627\u0644\u0627\u062A \u0627\u0644\u0623\u0647\u0644 \u0628\u062F\u0648\u0646 \u0643\u064A\u0628\u0644";
+      box.append(family);
+      return box;
+    };
+    const webLibrary = document.getElementById("installBody");
+    if (!window.flixNativePage && webLibrary) {
+      const decorateWeb = () => {
+        if (webLibrary.querySelector("[data-platform-guide]")) return;
+        webLibrary.append(guide(document));
+      };
+      new MutationObserver(decorateWeb).observe(webLibrary, { childList: true });
+      decorateWeb();
+    }
+    if (!window.flixNativePage) return;
+    const summary = document.querySelector(".installer summary");
+    for (const button of summary?.querySelectorAll("button") || []) {
+      if (button.textContent.trim() === "\u0641\u064A\u0647 \u0645\u0634\u0643\u0644\u0629") button.remove();
+    }
+    let pendingAndroid = false;
+    const doc = parent.document, root = doc.getElementById("app");
+    if (!root) return;
+    const library = () => doc.body.classList.contains("native-sheet-open") ? root.querySelector('.native-sheet[aria-label="\u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A"] .panel') || root.querySelector('.native-sheet[aria-label="\u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A"] main') : null;
+    const decorate = () => {
+      if (pendingAndroid) {
+        const form = root.querySelector('form[data-form="manual"]');
+        if (form) {
+          const platform = form.querySelector('[name="platform"]');
+          if (platform) platform.value = "android";
+          const name = form.querySelector('[name="name"]');
+          if (name) name.placeholder = "\u062C\u0648\u0627\u0644 \u0623\u0648 \u062A\u0627\u0628\u0644\u062A Android";
+          const title = form.closest("dialog")?.querySelector("h2");
+          if (title) title.textContent = "\u0625\u0636\u0627\u0641\u0629 \u062C\u0647\u0627\u0632 Android";
+          pendingAndroid = false;
+        }
+      }
+      const panel = library();
+      if (!panel || panel.dataset.sharedLibrary) return;
+      panel.dataset.sharedLibrary = "1";
+      const help = guide(doc);
+      help.style.cssText = "padding:12px;border:1px solid #334155;border-radius:12px;line-height:1.8;margin:12px 0";
+      panel.append(help);
+      if (!panel.classList.contains("panel")) return;
+      const add = panel.querySelector('[data-action="upload"]');
+      if (add) {
+        add.textContent = "\uFF0B \u0625\u0636\u0627\u0641\u0629 \u062A\u0637\u0628\u064A\u0642";
+        add.setAttribute("aria-label", "\u0625\u0636\u0627\u0641\u0629 \u062A\u0637\u0628\u064A\u0642");
+      }
+      const articles = [...panel.querySelectorAll("article.package")];
+      const groups = doc.createElement("div");
+      groups.dataset.ownApps = "1";
+      for (const app of own) {
+        const matching = articles.filter((a) => app.match.test(a.querySelector("strong")?.textContent || ""));
+        if (matching.length) {
+          for (const article of matching) groups.append(article);
+        } else {
+          const article = doc.createElement("article");
+          article.className = "package";
+          const text = doc.createElement("div"), name = doc.createElement("strong"), status = doc.createElement("small");
+          name.textContent = app.name;
+          status.textContent = "\u0644\u0627 \u062A\u0648\u062C\u062F \u062D\u0632\u0645\u0629 \u0644\u0647\u0630\u0627 \u0627\u0644\u0646\u0638\u0627\u0645 \u0641\u064A \u0627\u0644\u0645\u0643\u062A\u0628\u0629\u061B \u0623\u0636\u0641 \u0646\u0633\u062E\u062A\u0647 \u0623\u0648 \u0627\u0646\u0634\u0631\u0647\u0627 \u0645\u0646 \u0627\u0644\u0625\u062F\u0627\u0631\u0629.";
+          text.append(name, status);
+          article.append(text);
+          groups.append(article);
+        }
+      }
+      const anchor = panel.querySelector("article.package, h3");
+      if (anchor) panel.insertBefore(groups, anchor);
+      else panel.append(groups);
+    };
+    new MutationObserver(decorate).observe(root, { childList: true, subtree: true });
+    decorate();
+    setInterval(() => {
+      const panel = library();
+      const refresh = panel?.querySelector('[data-action="refresh-catalog"]');
+      if (!document.hidden && refresh && !refresh.disabled && !doc.querySelector("dialog[open],input:focus,textarea:focus")) refresh.click();
+    }, 6e4);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready);
+  else ready();
+  window.addEventListener("flix-add-package", () => {
+    if (window.flixNativePage) {
+      void fetch("/api/native-panel", { method: "POST", body: JSON.stringify({ panel: "library" }) });
+      return;
+    }
+    let dialog = document.getElementById("add-remote-package");
+    if (!dialog) {
+      dialog = document.createElement("dialog");
+      dialog.id = "add-remote-package";
+      dialog.dir = "rtl";
+      dialog.className = "package-dialog";
+      dialog.innerHTML = '<form><h3>\u0625\u0636\u0627\u0641\u0629 \u062A\u0637\u0628\u064A\u0642 \u0644\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646</h3><label>\u0627\u0633\u0645 \u0627\u0644\u062A\u0637\u0628\u064A\u0642<input name="name" required maxlength="120"></label><label>\u0645\u0639\u0631\u0651\u0641 \u0627\u0644\u062A\u0637\u0628\u064A\u0642<input name="appId" required pattern="[-a-zA-Z0-9_.]{1,200}" dir="ltr"></label><label>\u0627\u0644\u0625\u0635\u062F\u0627\u0631<input name="version" required maxlength="40" dir="ltr"></label><label>\u0627\u0644\u062D\u0632\u0645\u0629<input name="file" type="file" accept=".apk,.ipk" required></label><p>APK \u0644\u0623\u0646\u062F\u0631\u0648\u064A\u062F \u0648IPK \u0644\u0646\u0638\u0627\u0645 LG. \u0627\u0644\u062D\u0632\u0645\u0629 \u062A\u064F\u062D\u0641\u0638 \u0641\u064A \u0645\u0643\u062A\u0628\u0629 \u0627\u0644\u0631\u064A\u0645\u0648\u062A\u061B \u0627\u0644\u062A\u062B\u0628\u064A\u062A \u064A\u062D\u062A\u0627\u062C \u0645\u0648\u0627\u0641\u0642\u062A\u0643.</p><p role="status"></p><button type="submit">\u062D\u0641\u0638 \u0627\u0644\u062A\u0637\u0628\u064A\u0642</button><button type="button" data-close>\u0625\u0644\u063A\u0627\u0621</button></form>';
+      dialog.querySelector("[data-close]").onclick = () => dialog.close();
+      dialog.querySelector("form").onsubmit = async (event) => {
+        event.preventDefault();
+        const form = event.target, submit = form.querySelector('[type="submit"]'), status = form.querySelector('[role="status"]');
+        submit.disabled = true;
+        try {
+          const data = new FormData(form), file = data.get("file");
+          if (!file?.size || file.size > 64 * 1024 * 1024) throw Error("\u0627\u062E\u062A\u0631 \u062D\u0632\u0645\u0629 \u0644\u0627 \u062A\u062A\u062C\u0627\u0648\u0632 64 MB");
+          const encoded = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result).split(",")[1]);
+            reader.onerror = () => reject(Error("\u062A\u0639\u0630\u0631\u062A \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0645\u0644\u0641"));
+            reader.readAsDataURL(file);
+          });
+          const response = await fetch("/api/remote-packages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: data.get("name"), appId: data.get("appId"), version: data.get("version"), filename: file.name, data: encoded }) });
+          const result = await response.json();
+          if (!response.ok || result.ok === false) throw Error(result.message || result.error || "\u062A\u0639\u0630\u0631 \u062D\u0641\u0638 \u0627\u0644\u062D\u0632\u0645\u0629");
+          dialog.close();
+          form.reset();
+          window.dispatchEvent(new Event("flix-packages-changed"));
+        } catch (error) {
+          status.textContent = error.message;
+        } finally {
+          submit.disabled = false;
+        }
+      };
+      document.body.append(dialog);
+    }
+    dialog.showModal();
+  });
+})();
+</script>
+
+
+<script>(() => {
+  const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  let status, dialog, managerData, selectedAccount = "", busy = false;
+  const rpc = async (operation, data = {}) => {
+    const r = await fetch("/api/household", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ operation, data }) }), result = await r.json();
+    if (!r.ok || result.ok === false || result.error) throw Error(result.message || result.error || "\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u062D\u0633\u0627\u0628 FLIX");
+    return result;
+  };
+  const button = (action, text, extra = "") => `<button type="button" data-household="${action}" ${extra}>${text}</button>`;
+  function message(text) {
+    const p = dialog?.querySelector("[data-message]");
+    if (p) p.textContent = text;
+    else window.flixToast?.(text);
+  }
+  function freeze() {
+    const controls = [...dialog?.querySelectorAll("button:not(:disabled),input:not(:disabled),select:not(:disabled)") || []];
+    controls.forEach((c) => c.disabled = true);
+    return () => controls.forEach((c) => {
+      if (c.isConnected) c.disabled = false;
+    });
+  }
+  function close() {
+    dialog?.close();
+    dialog?.remove();
+    dialog = void 0;
+  }
+  function modal(title, body) {
+    close();
+    dialog = document.createElement("dialog");
+    dialog.className = "household-dialog";
+    dialog.dir = "rtl";
+    dialog.innerHTML = `<div class="household-heading"><strong>${esc(title)}</strong>${button("close", "\u0625\u063A\u0644\u0627\u0642")}</div><p data-message role="status"></p>${body}`;
+    document.body.append(dialog);
+    dialog.showModal();
+  }
+  function paint() {
+    const row = document.querySelector(".installer summary");
+    if (!row) return;
+    let admin2 = row.querySelector('[data-household="admin"]');
+    if (!admin2) {
+      admin2 = document.createElement("button");
+      admin2.type = "button";
+      admin2.dataset.household = "admin";
+      admin2.textContent = "\u0627\u0644\u0625\u062F\u0627\u0631\u0629";
+      row.append(admin2);
+    }
+    admin2.hidden = !status?.canAdmin;
+    let bar = document.querySelector("#household-profile");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.id = "household-profile";
+      row.closest(".installer").before(bar);
+    }
+    const profile = status?.profiles?.find((p) => p.id === status.selectedProfileId);
+    bar.innerHTML = status?.signedIn ? `<span>${esc(profile?.name || "\u0627\u062E\u062A\u0631 \u0645\u0644\u0641\u0643 \u0627\u0644\u0634\u062E\u0635\u064A")} ${profile ? "\xB7 " + esc(status.account.email) : ""}</span> ${button("profiles", "\u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0645\u0644\u0641")}${profile?.locked ? button("lock", "\u0642\u0641\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0631\u0626\u064A\u0633\u064A") : ""}` : "";
+  }
+  async function refresh() {
+    if (window.flixHouseholdProtocol !== 1) return;
+    status = await rpc("status");
+    paint();
+  }
+  function profiles() {
+    if (window.flixHouseholdProtocol !== 1) {
+      modal("\u062D\u0633\u0627\u0628 FLIX", "<p>\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u0645\u0644\u0641\u0627\u062A \u062A\u062D\u062A\u0627\u062C \u062A\u062D\u062F\u064A\u062B \u0646\u0633\u062E\u0629 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0627\u0644\u0623\u0633\u0627\u0633\u064A\u0629 \u0645\u0631\u0629 \u0648\u0627\u062D\u062F\u0629. \u062A\u0639\u062F\u064A\u0644\u0627\u062A \u0627\u0644\u0648\u0627\u062C\u0647\u0629 \u0627\u0644\u062A\u0627\u0644\u064A\u0629 \u062A\u0635\u0644 \u062A\u0644\u0642\u0627\u0626\u064A\u064B\u0627.</p>");
+      return;
+    }
+    if (!status?.signedIn) {
+      modal("\u062D\u0633\u0627\u0628 FLIX", `<form data-household-form="login"><label>\u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A<input name="email" type="email" autocomplete="username" required></label><label>\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631<input name="password" type="password" autocomplete="current-password" required></label><button>\u062F\u062E\u0648\u0644 FLIX</button></form>`);
+      return;
+    }
+    modal("\u0645\u0646 \u064A\u0633\u062A\u062E\u062F\u0645 \u0631\u064A\u0645\u0648\u062A FLIX\u061F", `<p><bdi>${esc(status.account.email)}</bdi></p>${status.profiles.map((p) => p.locked ? `<form data-household-form="select"><input type="hidden" name="profileId" value="${esc(p.id)}"><label>\u{1F512} ${esc(p.name)} \xB7 \u0627\u0644\u0645\u0644\u0641 ${p.number}<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,12}" autocomplete="off" placeholder="\u0627\u0644\u0631\u0642\u0645 \u0627\u0644\u0633\u0631\u064A" required></label><button>\u0641\u062A\u062D \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0631\u0626\u064A\u0633\u064A</button></form>` : button("select", `${esc(p.name)} \xB7 \u0627\u0644\u0645\u0644\u0641 ${p.number}${p.enabled ? "" : " \xB7 \u0645\u0648\u0642\u0648\u0641"}`, `data-profile="${esc(p.id)}" ${p.enabled ? "" : "disabled"}`)).join("")}<p>${esc(status.access?.reason || "\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u062D\u0633\u0627\u0628 \u0645\u062A\u0627\u062D\u0629 \u0644\u0644\u0645\u0644\u0641 \u0627\u0644\u0631\u0626\u064A\u0633\u064A \u0628\u0639\u062F \u0641\u062A\u062D\u0647.")}</p>${button("help", "\u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629 \u0648\u062A\u0634\u062E\u064A\u0635 \u0627\u0644\u0627\u062A\u0635\u0627\u0644")}${button("logout", "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C")}`);
+  }
+  const date = (value) => value ? new Date(value).toLocaleDateString("ar-SA", { calendar: "gregory" }) : "\u0628\u0644\u0627 \u062D\u062F";
+  function managerView() {
+    const accounts = managerData.accounts;
+    const account = accounts.find((a) => a.id === selectedAccount) || accounts[0];
+    selectedAccount = account?.id || "";
+    if (!account) {
+      modal("\u0625\u062F\u0627\u0631\u0629 FLIX", "<p>\u0644\u0627 \u062A\u0648\u062C\u062F \u062D\u0633\u0627\u0628\u0627\u062A.</p>");
+      return;
+    }
+    const clients = managerData.clients.filter((c) => c.accountId === account.id);
+    const sub = account.subscription;
+    modal("\u0625\u062F\u0627\u0631\u0629 FLIX", `<p>\u0627\u0644\u0625\u062F\u0627\u0631\u0629 \u0645\u0641\u062A\u0648\u062D\u0629 \u0644\u0644\u0645\u0644\u0641 \u0627\u0644\u0623\u0648\u0644 \u062D\u062A\u0649 ${new Date(managerData.managerUntil).toLocaleTimeString("ar")}.</p><label>\u0627\u0644\u062D\u0633\u0627\u0628 \u0627\u0644\u0645\u0633\u062C\u0644<select data-household-account>${accounts.map((a) => `<option value="${esc(a.id)}" ${a.id === account.id ? "selected" : ""}>${esc(a.email)}</option>`).join("")}</select></label><p>\u0627\u0644\u062A\u062D\u0643\u0645 \u0628\u0627\u0644\u0631\u064A\u0645\u0648\u062A: ${account.enabled ? "\u0645\u0633\u0645\u0648\u062D" : "\u0645\u0648\u0642\u0648\u0641"}</p>${account.email === "pro_1415@outlook.com" ? "" : button("account-access", account.enabled ? "\u0625\u064A\u0642\u0627\u0641 \u0627\u0644\u0631\u064A\u0645\u0648\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u062D\u0633\u0627\u0628 \u0639\u0644\u0649 \u0643\u0644 \u0623\u062C\u0647\u0632\u062A\u0647" : "\u0627\u0644\u0633\u0645\u0627\u062D \u0644\u0647\u0630\u0627 \u0627\u0644\u062D\u0633\u0627\u0628 \u0628\u0627\u0644\u0631\u064A\u0645\u0648\u062A", `data-enabled="${!account.enabled}"`)}<h3>\u0627\u0644\u0645\u0644\u0641\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629</h3>${account.profiles.map((p) => `<div class="household-item"><b>${esc(p.name)} \xB7 \u0627\u0644\u0645\u0644\u0641 ${p.number}${p.locked ? " \u{1F512}" : ""}</b><span>${p.enabled ? "\u064A\u0639\u0645\u0644" : "\u0645\u0648\u0642\u0648\u0641"}</span>${p.locked ? "" : button("profile-access", p.enabled ? "\u0625\u064A\u0642\u0627\u0641" : "\u062A\u0634\u063A\u064A\u0644", `data-profile="${esc(p.id)}" data-enabled="${!p.enabled}"`)}${p.primary ? "" : button("profile-remove", "\u062D\u0630\u0641", `data-profile="${esc(p.id)}"`)}</div>`).join("")}<form data-household-form="profile-add"><label>\u0645\u0644\u0641 \u062C\u062F\u064A\u062F<input name="name" maxlength="40" required placeholder="\u0627\u0633\u0645 \u0627\u0644\u0645\u0644\u0641"></label><button>\u0625\u0636\u0627\u0641\u0629 \u0645\u0644\u0641</button></form><h3>\u0627\u0634\u062A\u0631\u0627\u0643 \u0641\u0644\u0643\u0633</h3><p>${sub.state === "expired" ? "\u0645\u0646\u062A\u0647\u064D" : sub.state === "active" ? "\u0646\u0634\u0637" : "\u0628\u0644\u0627 \u062D\u062F"} \xB7 \u0627\u0644\u0627\u0646\u062A\u0647\u0627\u0621: ${date(sub.expiresAt)}${sub.daysLeft == null ? "" : " \xB7 \u0627\u0644\u0645\u062A\u0628\u0642\u064A " + sub.daysLeft + " \u064A\u0648\u0645\u064B\u0627"}</p><form data-household-form="subscription-grant"><label>\u0645\u062F\u0629 \u0627\u0644\u062A\u0645\u062F\u064A\u062F<select name="months">${[1, 2, 3, 6, 8, 12].map((n) => `<option value="${n}">${n} \u0634\u0647\u0631</option>`).join("")}</select></label><button>\u062A\u0645\u062F\u064A\u062F \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643</button></form>${button("subscription-stop", "\u0625\u064A\u0642\u0627\u0641 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0627\u0644\u0622\u0646")}<h3>\u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0648\u0646\u0633\u062E \u0627\u0644\u0631\u064A\u0645\u0648\u062A</h3>${clients.length ? clients.map((c) => `<div class="household-item"><span>${esc(c.platform)} \xB7 ${esc(c.version)} \xB7 ${c.online ? "\u0645\u062A\u0635\u0644" : "\u063A\u064A\u0631 \u0645\u062A\u0635\u0644"}${c.profileId ? " \xB7 " + esc(account.profiles.find((p) => p.id === c.profileId)?.name || "\u0645\u0644\u0641 \u0645\u062D\u0630\u0648\u0641") : ""}</span><small>\u0622\u062E\u0631 \u0627\u062A\u0635\u0627\u0644 ${new Date(c.lastSeenAt).toLocaleString("ar")}</small>${button("installation-access", c.access.installationEnabled ? "\u0625\u064A\u0642\u0627\u0641 \u0647\u0630\u0647 \u0627\u0644\u0646\u0633\u062E\u0629" : "\u062A\u0634\u063A\u064A\u0644 \u0647\u0630\u0647 \u0627\u0644\u0646\u0633\u062E\u0629", `data-client="${esc(c.id)}" data-enabled="${!c.access.installationEnabled}"`)}</div>`).join("") : "<p>\u0644\u0645 \u064A\u064F\u0633\u062C\u0644 \u0647\u0630\u0627 \u0627\u0644\u062D\u0633\u0627\u0628 \u0646\u0633\u062E\u0629 \u0631\u064A\u0645\u0648\u062A \u0628\u0639\u062F.</p>"}<p>\u062A\u064F\u0631\u0627\u062C\u0639 \u0635\u0644\u0627\u062D\u064A\u0627\u062A \u0627\u0644\u0631\u064A\u0645\u0648\u062A \u062E\u0644\u0627\u0644 30 \u062B\u0627\u0646\u064A\u0629 \u0623\u062B\u0646\u0627\u0621 \u0627\u062A\u0635\u0627\u0644\u0647. \u0627\u0644\u0645\u0644\u0641\u0627\u062A \u062A\u062D\u062A\u0627\u062C \u0627\u062A\u0635\u0627\u0644\u064B\u0627 \u0628\u0627\u0644\u062E\u0627\u062F\u0645\u061B \u0644\u0627 \u064A\u064F\u063A\u064A\u0651\u0631 \u0647\u0630\u0627 \u0632\u0631 \u062A\u0634\u063A\u064A\u0644 \u0627\u0644\u062A\u0644\u0641\u0632\u064A\u0648\u0646.</p>${button("admin", "\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0642\u0627\u0626\u0645\u0629")}`);
+  }
+  async function admin() {
+    managerData = await rpc("overview");
+    managerView();
+  }
+  async function select(data) {
+    status = await rpc("select", data);
+    paint();
+    close();
+  }
+  async function mutate(operation, data = {}) {
+    await rpc(operation, { ...data, accountId: selectedAccount, mutationId: crypto.randomUUID() });
+    await admin();
+  }
+  document.addEventListener("click", async (event) => {
+    const target = event.target.closest("button");
+    if (!target) return;
+    const accountButton = target.closest(".installer summary") && /حساب\s*FLIX/.test(target.textContent);
+    const action = accountButton ? "profiles" : target.dataset.household;
+    if (!action) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (busy) return;
+    busy = true;
+    const thaw = freeze();
+    try {
+      if (action === "close") close();
+      else if (action === "profiles") {
+        await refresh();
+        profiles();
+      } else if (action === "help") {
+        close();
+        window.flixOpenAccountSupport?.();
+      } else if (action === "admin") await admin();
+      else if (action === "select") await select({ profileId: target.dataset.profile });
+      else if (action === "logout") {
+        await rpc("logout");
+        status = void 0;
+        paint();
+        profiles();
+      } else if (action === "lock") {
+        status = await rpc("lock");
+        paint();
+        profiles();
+      } else if (["profile-remove", "subscription-stop", "account-access", "profile-access", "installation-access"].includes(action)) {
+        if (["profile-remove", "subscription-stop"].includes(action) && !confirm(action === "profile-remove" ? "\u062D\u0630\u0641 \u0647\u0630\u0627 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062E\u0635\u064A\u061F" : "\u0625\u064A\u0642\u0627\u0641 \u0627\u0634\u062A\u0631\u0627\u0643 \u0627\u0644\u062D\u0633\u0627\u0628 \u0627\u0644\u0645\u062D\u062F\u062F \u0627\u0644\u0622\u0646\u061F")) return;
+        await mutate(action, { profileId: target.dataset.profile, clientId: target.dataset.client, enabled: target.dataset.enabled === "true" });
+      }
+    } catch (error) {
+      message(error.message);
+      if (!dialog) window.flixToast?.(error.message);
+    } finally {
+      busy = false;
+      thaw();
+    }
+  }, true);
+  document.addEventListener("submit", async (event) => {
+    const form = event.target;
+    if (!form.dataset.householdForm) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (busy) return;
+    busy = true;
+    const data = Object.fromEntries(new FormData(form)), operation = form.dataset.householdForm, thaw = freeze();
+    try {
+      if (operation === "login") {
+        status = await rpc("login", data);
+        paint();
+        profiles();
+      } else if (operation === "select") await select(data);
+      else await mutate(operation, data);
+    } catch (error) {
+      message(error.message);
+    } finally {
+      busy = false;
+      thaw();
+    }
+  }, true);
+  document.addEventListener("change", (event) => {
+    if (!busy && event.target.matches("[data-household-account]")) {
+      selectedAccount = event.target.value;
+      managerView();
+    }
+  });
+  function mount() {
+    const style = document.createElement("style");
+    style.textContent = "[data-household=admin][hidden]{display:none!important}.household-dialog{width:min(94vw,620px);max-height:88vh;overflow:auto;background:#142332;color:#fff;border:1px solid #52718b;border-radius:16px;padding:18px}.household-dialog::backdrop{background:#000b}.household-dialog label{display:block;margin:10px 0}.household-dialog input,.household-dialog select{display:block;box-sizing:border-box;width:100%;padding:10px;margin-top:6px;color:#fff;background:#22394e;border:1px solid #7291a8;border-radius:7px}.household-dialog button{padding:9px;margin:4px;border:1px solid #607f98;border-radius:8px;background:#29455e;color:#fff;cursor:pointer}.household-dialog button:disabled{opacity:.5}.household-heading,.household-item{display:flex;align-items:center;flex-wrap:wrap;gap:7px;justify-content:space-between}.household-item{padding:10px 0;border-bottom:1px solid #466078}#household-profile{font-size:12px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}#household-profile button{font:inherit}";
+    document.head.append(style);
+    paint();
+    void refresh().catch(() => {
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
+  setInterval(() => {
+    if (!document.hidden && !busy && !dialog?.open) void refresh().catch(() => {
+      if (status) {
+        status.canAdmin = false;
+        paint();
+      }
+    });
+  }, 3e4);
+})();
+</script>
+
 </body>
 </html>

@@ -37,6 +37,7 @@ export async function initSupport() {
   sharing = false; control = undefined; installationId ||= crypto.randomUUID();
   try { const value = Capacitor.isNativePlatform() ? (await vault.readSession())?.value : sessionStorage.getItem('home-remote-account'); if (value) { account = JSON.parse(value); account!.url = accountUrl(account!.url); await verifyAccount(); } } catch { account = undefined; }
   accessGate.reset();
+  if(account) { try { const current=await household('status') as any; if(current.profiles?.some((p:any)=>p.id===current.selectedProfileId&&p.locked)) await household('lock'); } catch { /* Never restore a manager grant from local storage. */ } }
   await persist();
 }
 export async function login(url: string, email: string, password: string) {
@@ -48,9 +49,24 @@ export async function login(url: string, email: string, password: string) {
   accessGate.reset();
   const value = JSON.stringify(account); if (Capacitor.isNativePlatform()) await vault.saveSession({ value }); else sessionStorage.setItem('home-remote-account', value);
   await persist();
-  await accessGate.refresh();
+  await accessGate.refresh().catch(() => undefined);
 }
 export async function verifyAccount() { if (!account) return; const result = await request<{ account: AccountSession['account'] }>(account.url, '/api/home-remote/account/session', account.sessionToken); if (!result.account?.email) throw new Error('تحقق الحساب غير متاح.'); account.account = result.account; }
+/** Fixed operations only; downloaded HTML never receives the native session credential. */
+export async function household(operation: string, data: Record<string, unknown> = {}) {
+  if(operation === 'login') { await login('https://flix-admin-tan.vercel.app', String(data.email || ''), String(data.password || '')); return household('status'); }
+  if(operation === 'logout') { await logout(); return { signedIn: false }; }
+  if(!account) return { signedIn: false };
+  const routes: Record<string, [string,string]> = {
+    status:['profiles/status','GET'], select:['profiles/select','POST'], lock:['profiles/lock','POST'], overview:['manager/overview','GET'],
+    'profile-add':['manager/profile-add','POST'], 'profile-access':['manager/profile-access','POST'], 'profile-remove':['manager/profile-remove','POST'],
+    'account-access':['manager/account-access','POST'], 'installation-access':['manager/installation-access','POST'], 'subscription-grant':['manager/subscription-grant','POST'], 'subscription-stop':['manager/subscription-stop','POST'],
+  };
+  const route=routes[operation]; if(!route) throw Error('عملية غير مسموحة.');
+  const result = await request<Record<string, unknown>>(account.url, '/api/home-remote/'+route[0], account.sessionToken, route[1], route[1]==='POST'?data:undefined);
+  if(['select','lock'].includes(operation)) { accessGate.reset(); await accessGate.refresh(); revokeControl(); }
+  return { ...result, signedIn: true };
+}
 export async function logout() {
   accessGate.reset();
   await stopSharing(); const previous = account; account = undefined; actions = []; reportId = ''; resolved = []; pendingResults = []; problem = ''; events = []; messages = [];

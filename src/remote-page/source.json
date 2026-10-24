@@ -1,7 +1,7 @@
 {
   "source": "local_apps/flix-s/tools/tv-remote.html",
-  "sourceSha256": "00f11a92cff8cf1e83c242440ed03efacd678c63837889c0345f0fdcc3d5b355",
-  "bundledSha256": "bf87fe590fd7723be636673a1556911eeb17bac6d8cd7cb5d53a865629c7e0cd",
+  "sourceSha256": "863f3fef2b643254a0f7e3000ebcd997f212e9d807fb77bb8dddc268702df06d",
+  "bundledSha256": "8f8169d376e29dcd9d95ff47af62905d8bf2eceff5db155eada21d5aa2694bb9",
   "pictureSourceSha256": "4d341d0dfe5b36ad3c9a6d4a24a1023b65042564b1f2e42425a0f3699a5eb0f8",
   "pictureBundledSha256": "b6b972a2ab4896b36319cd3a442daee309b4b08b6c09918bd0b051c8e3d70b1a",
   "bluetoothBundledSha256": "242c2c01315ddf774984f3922c099a8cfc2a105d8998d80cedea243fff63b93c",
